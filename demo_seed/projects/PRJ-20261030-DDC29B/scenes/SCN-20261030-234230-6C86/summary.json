@@ -1,0 +1,13 @@
+{
+  "scene_id": "SCN-20261030-234230-6C86",
+  "project_id": "PRJ-20261030-DDC29B",
+  "name": "六设备产线（可动画演示）",
+  "version": 8,
+  "devices": 12,
+  "connections": 5,
+  "updated_at": "2026-10-31T22:20:22",
+  "errors": 0,
+  "warnings": 0,
+  "has_oip": true,
+  "content_hash": "efff723aae300b517241"
+}

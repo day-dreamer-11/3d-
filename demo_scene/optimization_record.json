@@ -1,0 +1,233 @@
+{
+  "schema_version": "2.0",
+  "experiment_id": "SOPT-20261030-220939-2DD6",
+  "project_id": "PRJ-20261030-CABE65",
+  "scene_id": "SCN-20261030-220854-B10F",
+  "scene_version": 4,
+  "kind": "factory",
+  "source": "scene_rule_optimizer",
+  "factory_engine": "scene_discrete_event",
+  "created_at": "2026-10-30T22:09:38",
+  "label": "场景优化实验 SOPT-20261030-220939-2DD6",
+  "baseline_experiment_id": "SEXP-20261030-220938-117A",
+  "baseline_metrics": {
+    "good_units": 70.0,
+    "throughput_uph": 420.0,
+    "oee": 0.8934,
+    "wip": 9.0,
+    "avg_lead_time_sec": 73.02,
+    "defect_rate": 0.0411,
+    "energy_kwh_total": 0.4427
+  },
+  "evaluations": [
+    {
+      "recipe_id": "SCENE-CONVEYOR-SPEED",
+      "title": "提高输送线速度：Conveyor A 0.50→0.75; Conveyor D 0.50→0.75 m/s",
+      "status": "ok",
+      "patch": {
+        "device_params": {
+          "pt_2": {
+            "speed_mps": 0.75
+          },
+          "pt_5": {
+            "speed_mps": 0.75
+          }
+        }
+      },
+      "baseline": {
+        "good_units": 70.0,
+        "throughput_uph": 420.0,
+        "oee": 0.8934,
+        "wip": 9.0,
+        "avg_lead_time_sec": 73.02,
+        "defect_rate": 0.0411,
+        "energy_kwh_total": 0.4427
+      },
+      "candidate": {
+        "good_units": 97.0,
+        "throughput_uph": 582.0,
+        "oee": 0.7987,
+        "wip": 10.0,
+        "avg_lead_time_sec": 51.37,
+        "defect_rate": 0.0673,
+        "energy_kwh_total": 0.5106
+      },
+      "deltas": {
+        "good_units": 27.0,
+        "throughput_uph": 162.0,
+        "oee": -0.0947,
+        "wip": 1.0,
+        "avg_lead_time_sec": -21.65,
+        "defect_rate": 0.0262,
+        "energy_kwh_total": 0.0679
+      },
+      "delta_pct": {
+        "good_units": 38.5714,
+        "throughput_uph": 38.5714,
+        "oee": -10.6,
+        "wip": 11.1111,
+        "avg_lead_time_sec": -29.6494,
+        "defect_rate": 63.747,
+        "energy_kwh_total": 15.3377
+      },
+      "score": 27.716
+    },
+    {
+      "recipe_id": "SCENE-QUALITY-SENSITIVITY",
+      "title": "进行质量敏感性实验：Inspection B 通过率 0.950 → 0.960",
+      "status": "ok",
+      "patch": {
+        "device_params": {
+          "pt_3": {
+            "pass_rate": 0.96
+          }
+        }
+      },
+      "baseline": {
+        "good_units": 70.0,
+        "throughput_uph": 420.0,
+        "oee": 0.8934,
+        "wip": 9.0,
+        "avg_lead_time_sec": 73.02,
+        "defect_rate": 0.0411,
+        "energy_kwh_total": 0.4427
+      },
+      "candidate": {
+        "good_units": 71.0,
+        "throughput_uph": 426.0,
+        "oee": 0.9191,
+        "wip": 9.0,
+        "avg_lead_time_sec": 73.09,
+        "defect_rate": 0.0274,
+        "energy_kwh_total": 0.4462
+      },
+      "deltas": {
+        "good_units": 1.0,
+        "throughput_uph": 6.0,
+        "oee": 0.0257,
+        "wip": 0.0,
+        "avg_lead_time_sec": 0.07,
+        "defect_rate": -0.0137,
+        "energy_kwh_total": 0.0035
+      },
+      "delta_pct": {
+        "good_units": 1.4286,
+        "throughput_uph": 1.4286,
+        "oee": 2.8767,
+        "wip": 0.0,
+        "avg_lead_time_sec": 0.0959,
+        "defect_rate": -33.3333,
+        "energy_kwh_total": 0.7906
+      },
+      "score": 2.771
+    },
+    {
+      "recipe_id": "SCENE-FAILURE-REDUCE",
+      "title": "维护 Inspection B：故障率 0.30 → 0.21 次/小时",
+      "status": "ok",
+      "patch": {
+        "device_params": {
+          "pt_3": {
+            "failure_prob_per_hour": 0.21
+          }
+        }
+      },
+      "baseline": {
+        "good_units": 70.0,
+        "throughput_uph": 420.0,
+        "oee": 0.8934,
+        "wip": 9.0,
+        "avg_lead_time_sec": 73.02,
+        "defect_rate": 0.0411,
+        "energy_kwh_total": 0.4427
+      },
+      "candidate": {
+        "good_units": 56.0,
+        "throughput_uph": 336.0,
+        "oee": 0.6739,
+        "wip": 9.0,
+        "avg_lead_time_sec": 80.67,
+        "defect_rate": 0.0508,
+        "energy_kwh_total": 0.3699
+      },
+      "deltas": {
+        "good_units": -14.0,
+        "throughput_uph": -84.0,
+        "oee": -0.2195,
+        "wip": 0.0,
+        "avg_lead_time_sec": 7.65,
+        "defect_rate": 0.0097,
+        "energy_kwh_total": -0.0728
+      },
+      "delta_pct": {
+        "good_units": -20.0,
+        "throughput_uph": -20.0,
+        "oee": -24.5691,
+        "wip": 0.0,
+        "avg_lead_time_sec": 10.4766,
+        "defect_rate": 23.601,
+        "energy_kwh_total": -16.4445
+      },
+      "score": -42.761
+    }
+  ],
+  "best": {
+    "recipe_id": "SCENE-CONVEYOR-SPEED",
+    "title": "提高输送线速度：Conveyor A 0.50→0.75; Conveyor D 0.50→0.75 m/s",
+    "status": "ok",
+    "patch": {
+      "device_params": {
+        "pt_2": {
+          "speed_mps": 0.75
+        },
+        "pt_5": {
+          "speed_mps": 0.75
+        }
+      }
+    },
+    "baseline": {
+      "good_units": 70.0,
+      "throughput_uph": 420.0,
+      "oee": 0.8934,
+      "wip": 9.0,
+      "avg_lead_time_sec": 73.02,
+      "defect_rate": 0.0411,
+      "energy_kwh_total": 0.4427
+    },
+    "candidate": {
+      "good_units": 97.0,
+      "throughput_uph": 582.0,
+      "oee": 0.7987,
+      "wip": 10.0,
+      "avg_lead_time_sec": 51.37,
+      "defect_rate": 0.0673,
+      "energy_kwh_total": 0.5106
+    },
+    "deltas": {
+      "good_units": 27.0,
+      "throughput_uph": 162.0,
+      "oee": -0.0947,
+      "wip": 1.0,
+      "avg_lead_time_sec": -21.65,
+      "defect_rate": 0.0262,
+      "energy_kwh_total": 0.0679
+    },
+    "delta_pct": {
+      "good_units": 38.5714,
+      "throughput_uph": 38.5714,
+      "oee": -10.6,
+      "wip": 11.1111,
+      "avg_lead_time_sec": -29.6494,
+      "defect_rate": 63.747,
+      "energy_kwh_total": 15.3377
+    },
+    "score": 27.716
+  },
+  "duration_sec": 600.0,
+  "seed": 42,
+  "assumptions": [
+    "候选方案均由场景引擎以相同 seed/时长真实重跑，未使用预设改善幅度。",
+    "优化建议为规则式，不是大模型生成；参数变更需人工确认后应用。",
+    "所有指标为软件仿真结果，不是真实工厂实测。"
+  ]
+}

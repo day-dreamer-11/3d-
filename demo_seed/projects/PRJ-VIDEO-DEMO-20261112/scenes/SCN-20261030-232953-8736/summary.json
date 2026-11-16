@@ -1,0 +1,13 @@
+{
+  "scene_id": "SCN-20261030-232953-8736",
+  "project_id": "PRJ-VIDEO-DEMO-20261112",
+  "name": "最小六设备产线（演示加载）",
+  "version": 2,
+  "devices": 6,
+  "connections": 5,
+  "updated_at": "2026-10-30T23:29:53",
+  "errors": 0,
+  "warnings": 0,
+  "has_oip": true,
+  "content_hash": "cde296e09b30e3c2a5e8"
+}

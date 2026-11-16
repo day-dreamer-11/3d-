@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "project_id": "PRJ-20261030-CABE65",
+  "name": "自建工厂演示项目",
+  "description": "OIP 三维场景 + Python 离散事件仿真全链路演示",
+  "goal": "从空白场景搭建六设备产线并分析优化",
+  "created_at": "2026-10-30T22:08:54",
+  "updated_at": "2026-10-30T22:08:54",
+  "line": {
+    "product_id": "PRODUCT-A",
+    "product_name": "工业产品 A（RFTwin 默认产品）",
+    "target_quantity": 1100,
+    "shift_start": "06:00",
+    "shift_length_hours": 8,
+    "process_route": [
+      "焊接",
+      "装配",
+      "机加工",
+      "视觉检测",
+      "成品入库"
+    ],
+    "priority_policy": "PRIORITY_THEN_FIFO"
+  },
+  "factory": {
+    "seed": 42,
+    "duration_min": 30,
+    "cells": {
+      "welding": {
+        "display_name": "焊接工位",
+        "cycle_sec": 40.0,
+        "stations": 4,
+        "robots": 4
+      },
+      "assembly": {
+        "display_name": "装配工位",
+        "cycle_sec": 40.0,
+        "stations": 4,
+        "robots": 4
+      },
+      "machine_tending": {
+        "display_name": "机加工工位",
+        "cycle_sec": 45.0,
+        "stations": 2,
+        "robots": 2
+      },
+      "vision_inspection": {
+        "display_name": "视觉检测工位",
+        "cycle_sec": 38.0,
+        "stations": 2,
+        "robots": 2
+      }
+    },
+    "buffers": {
+      "raw_material": {
+        "display_name": "原材料库存",
+        "capacity": 60
+      },
+      "welding_to_assembly": {
+        "display_name": "焊接 → 装配缓冲区",
+        "capacity": 8
+      },
+      "assembly_to_machining": {
+        "display_name": "装配 → 机加工缓冲区",
+        "capacity": 8
+      },
+      "machining_to_inspection": {
+        "display_name": "机加工 → 视觉检测缓冲区",
+        "capacity": 6
+      },
+      "rework_area": {
+        "display_name": "返修区",
+        "capacity": 10
+      }
+    },
+    "vision_fail_probability": 0.0068,
+    "minor_stop_probability": 0.015,
+    "amr_units": 2
+  },
+  "edge": {
+    "seed": 42,
+    "nodes": [
+      {
+        "node_id": "local",
+        "display_name": "本地工控机",
+        "node_type": "local",
+        "compute_gflops": 10.0,
+        "base_load": 0.35,
+        "max_task_gflops": 3.0,
+        "max_queue_slots": 8,
+        "bandwidth_mbps": 200.0,
+        "latency_ms": 2.0,
+        "congestion": 0.05,
+        "cost_per_gflop": 0.02
+      },
+      {
+        "node_id": "edge",
+        "display_name": "边缘服务器",
+        "node_type": "edge",
+        "compute_gflops": 40.0,
+        "base_load": 0.3,
+        "max_task_gflops": 12.0,
+        "max_queue_slots": 16,
+        "bandwidth_mbps": 80.0,
+        "latency_ms": 15.0,
+        "congestion": 0.2,
+        "cost_per_gflop": 0.06
+      },
+      {
+        "node_id": "cloud",
+        "display_name": "云服务器",
+        "node_type": "cloud",
+        "compute_gflops": 120.0,
+        "base_load": 0.2,
+        "max_task_gflops": 60.0,
+        "max_queue_slots": 32,
+        "bandwidth_mbps": 30.0,
+        "latency_ms": 60.0,
+        "congestion": 0.35,
+        "cost_per_gflop": 0.03
+      }
+    ],
+    "mapping": {
+      "data_size_mb": 4.0,
+      "compute_demand_gflops": 3.0,
+      "deadline_ms": 800.0,
+      "deadline_jitter_ms": 150.0,
+      "arrival_interval_ms": 180.0,
+      "network_jitter_ms": 6.0,
+      "result_size_mb": 0.02,
+      "max_tasks": 80,
+      "failed_compute_factor": 1.25,
+      "compute_variation": 0.15
+    }
+  }
+}

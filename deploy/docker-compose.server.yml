@@ -1,0 +1,56 @@
+# 自有服务器部署：Docker Compose + Caddy（自动 HTTPS）
+# 使用：
+#   cd deploy
+#   cp .env.example .env   # 填写 DOMAIN 与 BASIC_AUTH_PASSWORD
+#   docker compose -f docker-compose.server.yml up -d --build
+# 访问：https://$DOMAIN  （用户名默认 admin）
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    environment:
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:-admin}
+      BASIC_AUTH_PASSWORD: ${BASIC_AUTH_PASSWORD:?请在 .env 设置 BASIC_AUTH_PASSWORD}
+      AIC_DATA_DIR: /var/data
+      TWIN_PUBLIC_BASE: /twin
+      TWIN_INTERNAL_PORT: "8020"
+      TWIN_XFF: first
+      STREAMLIT_SERVER_ENABLE_CORS: "false"
+    volumes:
+      - aic-data:/var/data
+    restart: unless-stopped
+    stop_grace_period: 30s
+    mem_limit: 3g
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:10000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?请在 .env 设置域名}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  aic-data:
+  caddy-data:
+  caddy-config:

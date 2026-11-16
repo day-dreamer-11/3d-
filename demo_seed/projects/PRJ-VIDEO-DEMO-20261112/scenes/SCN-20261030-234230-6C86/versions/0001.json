@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "SCN-20261030-234230-6C86",
+  "project_id": "PRJ-VIDEO-DEMO-20261112",
+  "name": "动画测试-连续皮带",
+  "version": 1,
+  "created_at": "2026-10-30T23:42:30",
+  "updated_at": "2026-10-30T23:42:30",
+  "devices": [],
+  "connections": [],
+  "geometry_candidates": [],
+  "validation": {
+    "errors": [],
+    "warnings": []
+  },
+  "simulation_settings": {
+    "duration_sec": 1800,
+    "seed": 42,
+    "tick_sec": 0.25
+  },
+  "source": {
+    "oip_commit": "dcebf53",
+    "created_by": "aic_integration"
+  },
+  "oip_project": null,
+  "metadata": {},
+  "content_hash": "3d75e8baff783111d23c"
+}

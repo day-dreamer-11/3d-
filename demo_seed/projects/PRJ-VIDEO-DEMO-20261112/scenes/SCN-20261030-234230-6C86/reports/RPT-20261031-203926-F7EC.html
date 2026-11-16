@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>场景仿真报告</title>
+<style>
+body{font-family:'Microsoft YaHei',system-ui,sans-serif;max-width:1100px;margin:28px auto;padding:0 20px;color:#1c3348;background:#f7fafc;line-height:1.6}
+h1{font-size:25px} h2{font-size:18px;margin-top:28px;border-left:4px solid #2a7f8f;padding-left:10px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px} th,td{border:1px solid #dce5ec;padding:7px 9px;text-align:left}
+th{background:#edf3f7} .muted{color:#6a7f92;font-size:12px} .note{background:#f3f8fb;border:1px solid #d9e5ec;border-radius:8px;padding:10px 14px;font-size:13px;color:#35566d}
+</style></head><body>
+<h1>场景仿真报告 · 六设备产线（可动画演示）</h1>
+<p class="muted">项目 OIP 开源示例产线（PRJ-VIDEO-DEMO-20261112） · 场景 SCN-20261030-234230-6C86 v4 ·
+实验 VID-SEXP-20261031-203848-CCC1 · 引擎 scene_discrete_event · 时长 10.0 分钟</p>
+<div class="note">全部指标由 Python 离散事件仿真计算，属于软件仿真结果，不是真实工厂或 6G 网络实测。</div>
+<h2>关键指标</h2><table><tr><th>良品数</th><td>70</td></tr><tr><th>不良数</th><td>3</td></tr><tr><th>总产出</th><td>73</td></tr><tr><th>WIP</th><td>9</td></tr><tr><th>平均产能（件/小时）</th><td>420.00</td></tr><tr><th>OEE</th><td>89.34%</td></tr><tr><th>可用率</th><td>99.82%</td></tr><tr><th>性能</th><td>93.33%</td></tr><tr><th>质量</th><td>95.89%</td></tr><tr><th>平均生产周期（秒）</th><td>73.02</td></tr><tr><th>能耗（kWh）</th><td>0.4427</td></tr><tr><th>瓶颈</th><td>Conveyor A</td></tr></table>
+<h2>设备状态与利用率</h2><table><thead><tr><th>设备</th><th>名称</th><th>类型</th><th>末态</th><th>利用率</th><th>队列</th><th>处理数</th><th>能耗 kWh</th></tr></thead><tbody><tr><td>pt_1</td><td>Spawner</td><td>spawner</td><td>blocked</td><td>0.0%</td><td>1</td><td>81</td><td>0.005</td></tr><tr><td>pt_2</td><td>Conveyor A</td><td>conveyor</td><td>running</td><td>96.9%</td><td>6</td><td>74</td><td>0.097</td></tr><tr><td>pt_3</td><td>Inspection B</td><td>inspection</td><td>idle</td><td>21.6%</td><td>0</td><td>74</td><td>0.039</td></tr><tr><td>pt_4</td><td>Robot C</td><td>robot</td><td>idle</td><td>44.4%</td><td>0</td><td>71</td><td>0.208</td></tr><tr><td>pt_5</td><td>Conveyor D</td><td>conveyor</td><td>running</td><td>90.7%</td><td>0</td><td>70</td><td>0.092</td></tr><tr><td>pt_6</td><td>Despawner</td><td>despawner</td><td>idle</td><td>0.0%</td><td>0</td><td>70</td><td>0.002</td></tr></tbody></table>
+<h2>显式物料连接</h2><table><thead><tr><th>连接</th><th>源</th><th>源端口</th><th>目标</th><th>目标端口</th><th>类型</th><th>来源</th></tr></thead><tbody><tr><td>conn_6ddae60988</td><td>pt_1</td><td>out</td><td>pt_2</td><td>in</td><td>material_flow</td><td>geometry_derived_initial</td></tr><tr><td>conn_fc895f46c1</td><td>pt_2</td><td>out</td><td>pt_3</td><td>in</td><td>material_flow</td><td>geometry_derived_initial</td></tr><tr><td>conn_3ee44f8970</td><td>pt_3</td><td>out</td><td>pt_4</td><td>in</td><td>material_flow</td><td>geometry_derived_initial</td></tr><tr><td>conn_24269e63f5</td><td>pt_4</td><td>out</td><td>pt_5</td><td>in</td><td>material_flow</td><td>geometry_derived_initial</td></tr><tr><td>conn_cbc1f46493</td><td>pt_5</td><td>out</td><td>pt_6</td><td>in</td><td>material_flow</td><td>geometry_derived_initial</td></tr></tbody></table>
+<h2>瓶颈证据</h2><ul><li>瓶颈设备：Conveyor A，利用率 96.9%</li><li>窗口良品 70 件，平均产能 420.0 件/小时，WIP 9</li><li>OEE 89.3%（可用率 99.8% / 性能 93.3% / 质量 95.9%）</li><li>平均生产周期 73.0 秒，缺陷率 4.11%</li><li>仿真能耗 0.443 kWh（按设备功率与占用时间估算）</li><li>故障设备 pt_3：1 次，停机 4 秒</li></ul>
+
+
+<h2>假设与边界</h2><ul><li>全部指标由本次 Python 离散事件仿真实际计算，属于软件仿真结果，不是真实工厂实测。</li><li>设备节拍、故障率、维修时间、能耗为可编辑的仿真假设参数。</li><li>conveyor 按单服务台 + 有限队列建模，节拍 = 长度 / 速度；不是 Jolt 连续物理。</li><li>相同场景、相同 seed、相同仿真时长会得到相同结果。</li></ul>
+</body></html>

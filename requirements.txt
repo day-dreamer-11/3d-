@@ -1,0 +1,20 @@
+# 统一平台核心（Streamlit 工作台 + 边缘调度 + 工厂集成）
+streamlit>=1.66,<2
+plotly>=5.24,<8
+pandas>=2.2,<4
+pytest>=8,<10
+
+# EdgeCoder × RFTwin 集成所需
+pyyaml>=6.0
+httpx>=0.27
+wsproto>=1.2
+fastapi>=0.110,<1
+uvicorn[standard]>=0.30,<1
+
+# 可选：RFTwin 视觉检测 ONNX 推理。缺失时 RFTwin 自动退回 heuristic，
+# 仓库的 2 个视觉模型精度测试会因此失败（其余功能不受影响）。
+# onnxruntime>=1.17
+
+# RFTwin 视觉检测启发式（无 ONNX 时）需要 Pillow + numpy
+pillow>=10.0
+numpy>=1.26

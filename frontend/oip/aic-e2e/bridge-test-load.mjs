@@ -1,0 +1,23 @@
+import { chromium } from 'playwright'
+const URL = 'http://127.0.0.1:8610/app/?api=http%3A%2F%2F127.0.0.1%3A8705&projectId=PRJ-20261030-10DEE0&sceneId=SCN-20261030-215033-06A6'
+const sleep = (ms) => new Promise(r => setTimeout(r, ms))
+const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' })
+const page = await browser.newPage({ viewport: { width: 1600, height: 950 } })
+await page.addInitScript(() => { try { localStorage.setItem('oip-web/tutorial-done','1') } catch(e) {} })
+const errors=[]; page.on('pageerror',e=>errors.push(String(e))); page.on('console',m=>{if(m.type()==='error')errors.push(m.text())})
+await page.goto(URL)
+await page.waitForFunction(() => !!window.__oip?.store, null, { timeout: 30000, polling: 200 })
+await sleep(4500)
+const skip = page.locator('button', { hasText: /^Skip tour$/ }); if (await skip.count()) { await skip.first().click().catch(()=>{}); await sleep(400) }
+const info = await page.evaluate(() => ({ parts: window.__oip.store.getState().scene.parts.length, ids: window.__oip.store.getState().scene.parts.map(p=>p.id), names: window.__oip.store.getState().scene.parts.map(p=>p.name) }))
+console.log('loaded:', JSON.stringify(info))
+console.log('pill:', (await page.locator('#aic-sync-pill').innerText()).replace(/\n/g,' | '))
+await page.waitForTimeout(1500)
+await page.keyboard.press('Control+s')
+await sleep(2500)
+console.log('pill after ctrl+s:', (await page.locator('#aic-sync-pill').innerText()).replace(/\n/g,' | '))
+await page.evaluate(() => { try { window.__oip.view.focusOn(window.__oip.store.getState().scene.parts.map(p=>p.id)) } catch(e){} })
+await sleep(1500)
+await page.screenshot({ path: 'D:/AI数字工厂-交付/_e2e_data/shots/03-six-device-loaded.png' })
+console.log('errors', errors.length, errors.slice(0,3))
+await browser.close()

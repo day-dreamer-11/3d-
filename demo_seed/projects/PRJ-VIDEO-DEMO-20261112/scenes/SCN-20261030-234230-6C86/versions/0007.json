@@ -1,0 +1,804 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "SCN-20261030-234230-6C86",
+  "project_id": "PRJ-VIDEO-DEMO-20261112",
+  "name": "六设备产线（可动画演示）",
+  "version": 7,
+  "created_at": "2026-10-30T23:42:30",
+  "updated_at": "2026-10-31T22:18:32",
+  "devices": [
+    {
+      "id": "pt_1",
+      "type": "spawner",
+      "name": "Spawner",
+      "position": [
+        -6.5,
+        2.5,
+        0.0
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.96
+      },
+      "params": {
+        "interval_sec": 4.0,
+        "batch_size": 1,
+        "total_limit": 0,
+        "capacity": 1,
+        "power_kw": 0.3,
+        "failure_prob_per_hour": 0.1,
+        "mttr_min": 1.0,
+        "simulation_notes": "",
+        "boxes_per_minute": 15.0,
+        "product_type": "oip.box"
+      },
+      "simulation_type": "spawner",
+      "ports": [
+        {
+          "id": "out",
+          "name": "Output",
+          "direction": "output",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.box-spawner",
+        "oip_part_type": "part",
+        "oip_part_name": "Spawner",
+        "defaults_applied": [],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_2",
+      "type": "conveyor",
+      "name": "Conveyor A",
+      "position": [
+        -4.5,
+        2.0,
+        0.0
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 4.0,
+        "width": 1.524,
+        "height": 0.9
+      },
+      "params": {
+        "item_spacing_m": 0.6,
+        "power_kw": 0.6,
+        "failure_prob_per_hour": 0.4,
+        "mttr_min": 2.0,
+        "direction": 1,
+        "capacity": 7,
+        "simulation_notes": "",
+        "speed_mps": 0.5,
+        "length_m": 4.0,
+        "width_m": 1.524,
+        "deck_angle_deg": 0.0
+      },
+      "simulation_type": "conveyor",
+      "ports": [
+        {
+          "id": "in",
+          "name": "Input",
+          "direction": "input",
+          "flow": "material",
+          "offset": [
+            -2.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "id": "out",
+          "name": "Output",
+          "direction": "output",
+          "flow": "material",
+          "offset": [
+            2.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.roller-conveyor",
+        "oip_part_type": "part",
+        "oip_part_name": "Conveyor A",
+        "defaults_applied": [
+          "speed_mps"
+        ],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_3",
+      "type": "inspection",
+      "name": "Inspection B",
+      "position": [
+        -2.2,
+        1.98,
+        0.8190000000000001
+      ],
+      "rotation": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.15,
+        "width": 0.15,
+        "height": 0.3
+      },
+      "params": {
+        "cycle_sec": 2.0,
+        "pass_rate": 0.95,
+        "accuracy": 0.98,
+        "capacity": 1,
+        "power_kw": 0.8,
+        "failure_prob_per_hour": 0.3,
+        "mttr_min": 1.5,
+        "range_m": 2.0,
+        "inspection_kind": "color-sensor",
+        "simulation_notes": ""
+      },
+      "simulation_type": "inspection",
+      "ports": [
+        {
+          "id": "in",
+          "name": "Input",
+          "direction": "input",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": null
+        },
+        {
+          "id": "out",
+          "name": "Output",
+          "direction": "output",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": null
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.color-sensor",
+        "oip_part_type": "part",
+        "oip_part_name": "Inspection B",
+        "defaults_applied": [],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_4",
+      "type": "robot",
+      "name": "Robot C",
+      "position": [
+        -1.2,
+        2.0,
+        1.4
+      ],
+      "rotation": {
+        "yaw": -0.008475803666156526,
+        "pitch": 0.0765674986880672,
+        "roll": 0.02003806942067119
+      },
+      "dimensions": {
+        "length": 1.88,
+        "width": 0.83,
+        "height": 3.49
+      },
+      "params": {
+        "cycle_sec": 4.0,
+        "reach_m": 0.94,
+        "payload_kg": 10.0,
+        "capacity": 1,
+        "power_kw": 2.5,
+        "failure_prob_per_hour": 0.5,
+        "mttr_min": 3.0,
+        "oip_speed": 120.0,
+        "simulation_notes": ""
+      },
+      "simulation_type": "robot",
+      "ports": [
+        {
+          "id": "in",
+          "name": "Input",
+          "direction": "input",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": null
+        },
+        {
+          "id": "out",
+          "name": "Output",
+          "direction": "output",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": null
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.six-axis-robot",
+        "oip_part_type": "part",
+        "oip_part_name": "Robot C",
+        "defaults_applied": [],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_5",
+      "type": "conveyor",
+      "name": "Conveyor D",
+      "position": [
+        -0.5,
+        2.0,
+        0.0
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 4.0,
+        "width": 1.524,
+        "height": 0.9
+      },
+      "params": {
+        "item_spacing_m": 0.6,
+        "power_kw": 0.6,
+        "failure_prob_per_hour": 0.4,
+        "mttr_min": 2.0,
+        "direction": 1,
+        "capacity": 7,
+        "simulation_notes": "",
+        "speed_mps": 0.5,
+        "length_m": 4.0,
+        "width_m": 1.524,
+        "deck_angle_deg": 0.0
+      },
+      "simulation_type": "conveyor",
+      "ports": [
+        {
+          "id": "in",
+          "name": "Input",
+          "direction": "input",
+          "flow": "material",
+          "offset": [
+            -2.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            -1.0,
+            0.0
+          ]
+        },
+        {
+          "id": "out",
+          "name": "Output",
+          "direction": "output",
+          "flow": "material",
+          "offset": [
+            2.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.roller-conveyor",
+        "oip_part_type": "part",
+        "oip_part_name": "Conveyor D",
+        "defaults_applied": [
+          "speed_mps"
+        ],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_6",
+      "type": "despawner",
+      "name": "Despawner",
+      "position": [
+        1.7,
+        2.0,
+        0.0
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 2.0,
+        "width": 2.0,
+        "height": 1.0
+      },
+      "params": {
+        "capacity": 100000,
+        "power_kw": 0.1,
+        "failure_prob_per_hour": 0.0,
+        "mttr_min": 0.0,
+        "count_only": false,
+        "simulation_notes": ""
+      },
+      "simulation_type": "despawner",
+      "ports": [
+        {
+          "id": "in",
+          "name": "Input",
+          "direction": "input",
+          "flow": "material",
+          "offset": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "out": [
+            -1.0,
+            0.0
+          ]
+        }
+      ],
+      "metadata": {
+        "oip_package_id": "oip.despawner",
+        "oip_part_type": "part",
+        "oip_part_name": "Despawner",
+        "defaults_applied": [],
+        "source": "oip_mapping"
+      }
+    },
+    {
+      "id": "pt_7",
+      "type": "unknown",
+      "name": "user.part-7",
+      "position": [
+        -2.1039421535975347,
+        0.0,
+        3.936371651847895
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-7",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-7"
+      }
+    },
+    {
+      "id": "pt_8",
+      "type": "unknown",
+      "name": "user.part-8",
+      "position": [
+        3.9363716518478933,
+        0.0,
+        -2.103942153597533
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-8",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-8"
+      }
+    },
+    {
+      "id": "pt_9",
+      "type": "unknown",
+      "name": "user.part-9",
+      "position": [
+        1.7810807736489505,
+        0.0,
+        6.124122871334315
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-9",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-9"
+      }
+    },
+    {
+      "id": "pt_10",
+      "type": "unknown",
+      "name": "user.part-10",
+      "position": [
+        6.124122871334313,
+        0.0,
+        1.7810807736489522
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-10",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-10"
+      }
+    },
+    {
+      "id": "pt_11",
+      "type": "unknown",
+      "name": "user.part-11",
+      "position": [
+        -2.6201525782243653,
+        0.0,
+        0.4482015187265773
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-11",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-11"
+      }
+    },
+    {
+      "id": "pt_12",
+      "type": "unknown",
+      "name": "user.part-12",
+      "position": [
+        0.44820151872657554,
+        0.0,
+        -2.6201525782243635
+      ],
+      "rotation": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "roll": 0.0
+      },
+      "dimensions": {
+        "length": 0.5,
+        "width": 0.5,
+        "height": 0.5
+      },
+      "params": {},
+      "simulation_type": "display_only",
+      "ports": [],
+      "metadata": {
+        "oip_package_id": "user.part-12",
+        "oip_part_type": "part",
+        "unsupported_reason": "暂未映射的 OIP 部件类型：user.part-12"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_6ddae60988",
+      "source_device": "pt_1",
+      "source_port": "out",
+      "target_device": "pt_2",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived_initial",
+        "gap_m": 1.0,
+        "direction_dot": -1.0,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_fc895f46c1",
+      "source_device": "pt_2",
+      "source_port": "out",
+      "target_device": "pt_3",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived_initial",
+        "gap_m": 0.1,
+        "direction_dot": null,
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "conn_3ee44f8970",
+      "source_device": "pt_3",
+      "source_port": "out",
+      "target_device": "pt_4",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived_initial",
+        "gap_m": 1.4,
+        "direction_dot": null,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_24269e63f5",
+      "source_device": "pt_4",
+      "source_port": "out",
+      "target_device": "pt_5",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived_initial",
+        "gap_m": 1.5,
+        "direction_dot": null,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_cbc1f46493",
+      "source_device": "pt_5",
+      "source_port": "out",
+      "target_device": "pt_6",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived_initial",
+        "gap_m": 0.9,
+        "direction_dot": -1.0,
+        "confidence": "medium"
+      }
+    }
+  ],
+  "geometry_candidates": [
+    {
+      "id": "conn_3ee4fdd7eb",
+      "source_device": "pt_1",
+      "source_port": "out",
+      "target_device": "pt_2",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived",
+        "gap_m": 0.5,
+        "direction_dot": -1.0,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_4a7c95a9cd",
+      "source_device": "pt_2",
+      "source_port": "out",
+      "target_device": "pt_5",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived",
+        "gap_m": 0.0,
+        "direction_dot": -1.0,
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "conn_5988991942",
+      "source_device": "pt_3",
+      "source_port": "out",
+      "target_device": "pt_4",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived",
+        "gap_m": 1.1567,
+        "direction_dot": null,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_c3814c1977",
+      "source_device": "pt_4",
+      "source_port": "out",
+      "target_device": "pt_3",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived",
+        "gap_m": 1.1567,
+        "direction_dot": null,
+        "confidence": "medium"
+      }
+    },
+    {
+      "id": "conn_e2f87e8bfa",
+      "source_device": "pt_5",
+      "source_port": "out",
+      "target_device": "pt_6",
+      "target_port": "in",
+      "connection_type": "material_flow",
+      "metadata": {
+        "source": "geometry_derived",
+        "gap_m": 0.2,
+        "direction_dot": -1.0,
+        "confidence": "high"
+      }
+    }
+  ],
+  "validation": {
+    "errors": [],
+    "warnings": [
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_7（user.part-7）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_7"
+        ],
+        "connection_id": null
+      },
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_8（user.part-8）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_8"
+        ],
+        "connection_id": null
+      },
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_9（user.part-9）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_9"
+        ],
+        "connection_id": null
+      },
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_10（user.part-10）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_10"
+        ],
+        "connection_id": null
+      },
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_11（user.part-11）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_11"
+        ],
+        "connection_id": null
+      },
+      {
+        "severity": "warning",
+        "code": "unsupported_device",
+        "message": "设备 pt_12（user.part-12）暂未映射到 Python 模型，标记为“仅三维展示”，不能参与物料流。",
+        "devices": [
+          "pt_12"
+        ],
+        "connection_id": null
+      }
+    ]
+  },
+  "simulation_settings": {
+    "duration_sec": 1800,
+    "seed": 42,
+    "tick_sec": 0.25
+  },
+  "source": {
+    "oip_commit": "dcebf53",
+    "created_by": "aic_integration",
+    "oip_project_name": "六设备产线（可动画演示）",
+    "connections_adopted_from_geometry": false,
+    "last_ingest": "oip_editor_save",
+    "last_ingest_at": "2026-10-31T22:18:32"
+  },
+  "oip_project": null,
+  "metadata": {
+    "ignored_parts": [],
+    "mapping_defaults": {
+      "pt_1": [],
+      "pt_2": [
+        "speed_mps"
+      ],
+      "pt_3": [],
+      "pt_4": [],
+      "pt_5": [
+        "speed_mps"
+      ],
+      "pt_6": []
+    }
+  },
+  "content_hash": "f1d06bce75adaa8321c2",
+  "oip_blob": "5107c8783e3da440a0ecc45a"
+}

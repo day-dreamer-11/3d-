@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 数字工厂项目报告书</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  color: #1f2d3a; font-size: 10.5pt; line-height: 1.75;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.cover-inner {
+  min-height: 235mm; display: flex; flex-direction: column; justify-content: center;
+  padding: 10mm 4mm;
+}
+.page-break { page-break-after: always; break-after: page; height: 0; }
+.cover .band { height: 10mm; background: linear-gradient(90deg,#16324f,#2a7f8f); border-radius: 3mm; margin-bottom: 16mm; }
+.cover h1 { font-size: 30pt; letter-spacing: 1px; color: #16324f; margin: 0 0 4mm 0; line-height: 1.3; }
+.cover .sub { font-size: 14pt; color: #2a7f8f; margin-bottom: 18mm; }
+.cover .meta { font-size: 10pt; color: #455a6b; line-height: 2; border-left: 3px solid #2a7f8f; padding-left: 5mm; }
+.cover .note { margin-top: 16mm; font-size: 9pt; color: #6a7f92; }
+.toc { page-break-after: always; }
+.toc h2 { page-break-before: avoid; border: 0; padding: 0; margin: 0 0 6mm 0; font-size: 18pt; color: #16324f; }
+.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
+.toc li { margin: 2.6mm 0; padding-bottom: 1.6mm; border-bottom: 1px dotted #c9d6df; }
+.toc a { color: #1f4e6b; text-decoration: none; }
+.toc .num { display: inline-block; width: 9mm; color: #2a7f8f; font-weight: 600; }
+h2 {
+  page-break-before: always; font-size: 17pt; color: #16324f;
+  border-bottom: 2px solid #2a7f8f; padding-bottom: 2.5mm; margin: 0 0 5mm 0;
+}
+h2:first-of-type { page-break-before: auto; }
+h3 { font-size: 12.5pt; color: #1f4e6b; margin: 6mm 0 2.5mm 0; }
+h4 { font-size: 11pt; color: #27405a; margin: 4mm 0 2mm 0; }
+p { margin: 0 0 3mm 0; text-align: justify; }
+strong { color: #16324f; }
+code { font-family: Consolas, "Courier New", monospace; background: #eef4f8; padding: 0.3mm 1.2mm; border-radius: 1mm; font-size: 9.2pt; }
+pre { background: #f4f8fb; border: 1px solid #d9e5ec; border-left: 3px solid #2a7f8f;
+  border-radius: 1.5mm; padding: 3mm 4mm; overflow-x: auto; page-break-inside: avoid; }
+pre code { background: transparent; padding: 0; font-size: 8.6pt; line-height: 1.55; }
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm 0; font-size: 9pt; page-break-inside: avoid; }
+thead th { background: #eaf4f7; color: #16324f; font-weight: 600; }
+th, td { border: 1px solid #cfdde6; padding: 1.8mm 2.4mm; text-align: left; vertical-align: top; }
+tbody tr:nth-child(even) { background: #f8fbfd; }
+blockquote { margin: 3mm 0; padding: 2.5mm 4mm; background: #f3f8fb; border-left: 3px solid #c08a3e; color: #455a6b; }
+ul, ol { margin: 0 0 3mm 0; padding-left: 7mm; }
+li { margin: 1.2mm 0; }
+hr { border: 0; border-top: 1px solid #d9e5ec; margin: 6mm 0; }
+a { color: #1f5b8a; }
+.small { font-size: 8.5pt; color: #6a7f92; }
+</style>
+</head>
+<body>
+<section class="cover">
+  <div class="cover-inner">
+    <div class="band"></div>
+    <h1>AI 数字工厂<br>项目报告书</h1>
+    <div class="sub">OIP 三维场景 × Python 离散事件仿真平台</div>
+    <div class="meta">
+      报告版本：1.1.1<br>
+      生成日期：2026-11-03<br>
+      交付形态：源码运行 + Windows 离线安装包<br>
+      仿真权威：integration/scene/engine.py<br>
+      测试结论：79 passed；浏览器五页 0 渲染异常、0 控制台错误
+    </div>
+    <div class="note">
+      声明：本报告中的产能、OEE、能耗、边缘时延等数据均来自软件仿真，
+      不是真实工厂或 6G 网络实测。
+    </div>
+  </div>
+</section>
+<div class="page-break"></div>
+<section class="toc">
+  <h2>目录</h2>
+  <ol><li><a href="#sec-1"><span class="num">01</span>摘要</a></li><li><a href="#sec-2"><span class="num">02</span>项目背景与目标</a></li><li><a href="#sec-3"><span class="num">03</span>系统总览</a></li><li><a href="#sec-4"><span class="num">04</span>核心功能</a></li><li><a href="#sec-5"><span class="num">05</span>关键技术</a></li><li><a href="#sec-6"><span class="num">06</span>性能与工程优化汇总</a></li><li><a href="#sec-7"><span class="num">07</span>测试与验证</a></li><li><a href="#sec-8"><span class="num">08</span>部署与交付</a></li><li><a href="#sec-9"><span class="num">09</span>已知限制与边界</a></li><li><a href="#sec-10"><span class="num">10</span>后续规划</a></li><li><a href="#sec-11"><span class="num">11</span>附录 A：常用命令</a></li><li><a href="#sec-12"><span class="num">12</span>附录 B：核心目录</a></li><li><a href="#sec-13"><span class="num">13</span>附录 C：结论</a></li></ol>
+</section>
+<main>
+<h2 id="sec-1">摘要</h2>
+<p>本项目面向“工业数字工厂”教学、演示与方案验证场景，构建了一套从 <strong>三维场景搭建</strong> 到 <strong>生产仿真、数据分析、边缘调度、优化归档</strong> 的完整软件闭环。</p>
+<p>平台以 Open Industry Project（OIP）作为三维场景编辑器，用户在浏览器中自由摆放输送机、检测装置、机器人、物料源与出口，保存后由桥接脚本把 OIP 工程转换为统一设备模型与显式物料连接表；随后由独立的 Python 离散事件引擎按固定步长、固定随机种子运行生产仿真，输出良品、产能、WIP、OEE、设备利用率、故障与能耗等指标。分析模块基于真实实验结果识别瓶颈并生成规则式优化建议；每个候选方案都必须真实重跑后才能进入对比，报告同时展示产能、周期与 OEE 的权衡，不隐藏不利结果。</p>
+<p>工程侧完成了存储压缩、接口瘦身、缓存复用、实时实例清理、代码结构拆分与大工程自动保存等优化。演示数据存储从 173MB 降到 115MB，版本快照从约 19MB 降到 KB 级，场景列表读取从约 50ms 降到 1ms 以内；编辑器 20MB 工程的自动保存从“超出 localStorage 配额”变为可正常写入 IndexedDB；平台入口从 4427 行拆分为约 1930 行的五页应用与独立的旧页面模块。</p>
+<p>交付侧提供 Windows 离线安装包 1.1.1（内置 Python 运行时、OIP 静态构建、演示数据），完成静默安装、启动、五页检查与卸载验证。全量自动化测试 79 项通过，浏览器端五页、OIP 编辑器、版本历史、演示重置等关键路径均实测无错误。</p>
+<hr>
+<h2 id="sec-2">1. 项目背景与目标</h2>
+<h3>1.1 背景</h3>
+<p>工业数字孪生与智能制造方案通常包含三维场景、产线仿真、数据分析、边缘计算与优化决策等多个环节，但实际演示中常见两类问题：</p>
+<ul><li>三维编辑器与生产仿真相互割裂，场景改动无法自动进入仿真；</li><li>演示数据与结果存在“写死”或只展示有利指标的情况，难以复现与追溯。</li></ul>
+<p>本项目把两者打通：OIP 负责“看见工厂”，Python 引擎负责“算出工厂”，所有 KPI 都来自本次场景的真实 tick 级仿真。</p>
+<h3>1.2 目标</h3>
+<ol><li>用户可以在浏览器中从空白地面搭建产线，无需安装 CAD 或桌面软件。</li><li>场景保存后自动转换为统一设备模型和显式物料流，并能校验断流、环路、悬空设备。</li><li>同一场景、同一随机种子、同一时长必须得到相同结果，支持离线复现。</li><li>分析、优化、边缘调度与报告全部引用真实实验结果，不写死指标。</li><li>提供可交付评委的 Windows 离线安装包，无需 Python、Node.js 或 Docker。</li></ol>
+<hr>
+<h2 id="sec-3">2. 系统总览</h2>
+<h3>2.1 产品形态</h3>
+<p>平台主导航为五页：</p>
+<table><thead><tr><th>页面</th><th>职责</th></tr></thead><tbody><tr><td>平台总览</td><td>项目/场景摘要、KPI 卡片、工作流入口</td></tr><tr><td>场景编辑器</td><td>内嵌 OIP 三维编辑器；场景管理、工程导入、设备/连接/校验、版本历史</td></tr><tr><td>建模分析工作台</td><td>① 建模 → ② 采集数据 → ③ 数据分析 → ④ 优化归档 → ⑤ 报告</td></tr><tr><td>实验历史</td><td>场景实验列表、单实验指标、同场景对比</td></tr><tr><td>系统设置</td><td>服务状态、运行环境、数据目录、演示数据重置、边界说明</td></tr></tbody></table>
+<h3>2.2 总体架构</h3>
+<pre><code>浏览器
+ ├─ Streamlit 工作台（五页）
+ │   ├─ 场景编辑器 iframe → OIP 三维编辑器
+ │   └─ 工作台 → 离线/实时仿真、分析、优化、报告
+ ├─ 场景 FastAPI（127.0.0.1:8701+）
+ │   ├─ 场景/版本/报告存储（JSON，原子写）
+ │   ├─ Python 离散事件引擎（生产 KPI 唯一权威）
+ │   ├─ EdgeCoder 任务映射与三策略调度
+ │   └─ 瓶颈分析、规则式优化、报告生成
+ └─ OIP 静态服务（127.0.0.1:8610+）
+     └─ frontend/oip/dist（Python http.server，运行时不需要 Node）</code></pre>
+<p>主编排链：</p>
+<pre><code>OIP 工程
+ → 统一设备模型（Device/Port/Connection）
+ → 显式 material_flow 连接
+ → 拓扑排序
+ → 固定步长离散事件仿真
+ → KPI / 设备状态 / 事件 / 分钟曲线
+ → 瓶颈分析 / EdgeCoder / 优化重跑 / 报告</code></pre>
+<h3>2.3 技术栈</h3>
+<table><thead><tr><th>层</th><th>技术</th></tr></thead><tbody><tr><td>前端工作台</td><td>Streamlit、Plotly、pandas</td></tr><tr><td>三维编辑器</td><td>OIP（TypeScript、three.js、Jolt Physics），固定 <code>dcebf53</code></td></tr><tr><td>业务 API</td><td>FastAPI、Pydantic、uvicorn</td></tr><tr><td>仿真引擎</td><td>Python 3.12，纯标准库离散事件实现</td></tr><tr><td>边缘调度</td><td>项目内置 EdgeCoder（network_sim / scheduler）</td></tr><tr><td>持久化</td><td>JSON 文件 + <code>os.replace</code> 原子写；桌面版支持 SQLite</td></tr><tr><td>测试</td><td>pytest、Streamlit AppTest、Playwright/Edge</td></tr></tbody></table>
+<hr>
+<h2 id="sec-4">3. 核心功能</h2>
+<h3>3.1 场景编辑器</h3>
+<ul><li>新建/删除/切换场景，导入 OIP 工程 JSON；</li><li>iframe 内嵌 OIP 编辑器，默认自动运行动画（仅视觉演示，不参与 KPI）；</li><li>保存后自动转换为统一设备模型，生成设备清单、显式连接和校验结果；</li><li>支持版本历史：版本列表、当前 vs 选中版本的设备增删/参数变化、一键恢复；</li><li>编辑器内支持“同步到 AIC”、实时仿真联动面板、故障/阻塞设备高亮。</li></ul>
+<h3>3.2 建模分析工作台</h3>
+<p>单页串联五个阶段，并共享同一场景上下文：</p>
+<ol><li><strong>建模</strong>：展示场景、设备、连接与校验；三维搭建跳转场景编辑器；</li><li><strong>采集数据</strong>：离线确定性仿真或实时仿真；</li><li><strong>数据分析</strong>：瓶颈、WIP、OEE 分解、设备利用率、三维状态快照；</li><li><strong>优化归档</strong>：EdgeCoder、规则式建议、What-if、优化应用、实验对比；</li><li><strong>报告</strong>：生成 JSON / Markdown / HTML 报告。</li></ol>
+<p>顶部进度条按实际数据点亮：建模 → 采集 → 分析 → 优化 → 报告。</p>
+<h3>3.3 仿真引擎</h3>
+<ul><li>每个设备单服务台 + 有限队列；</li><li>输送机节拍 = 长度 / 速度；检测/机器人按参数节拍；</li><li>下游容量满时进入 blocked，只重试传递，不重复加工或重复判定；</li><li>故障按指数间隔发生、按 MTTR 维修，维修期间停机；</li><li>所有指标来自 tick 级统计：良品、不良、WIP、吞吐、OEE、平均周期、能耗、故障、利用率；</li><li>相同场景 + 相同 seed + 相同时长 ⇒ 相同结果（离线实验）。</li></ul>
+<h3>3.4 边缘计算与优化</h3>
+<ul><li>从本次场景事件生成计算任务：视觉检测、质量判定、故障预警、设备监测、生产调度；</li><li>固定本地、固定云端、动态调度三种策略共享同一任务集，输出满足率、平均/P95 时延、超时、拒绝、成本；</li><li>瓶颈分析基于真实设备利用率与队列；</li><li>优化建议为规则式候选，但每个候选必须真实重跑后才参与评分；</li><li>应用优化会生成新的场景版本和新实验，历史版本与历史实验均保留。</li></ul>
+<h3>3.5 实验历史与项目文件</h3>
+<ul><li>实验记录保存场景快照、场景版本、seed、时长、KPI、事件与设备状态；</li><li>历史实验不受后续场景修改影响；</li><li>支持同场景基线与候选实验对比；</li><li>整包导出为单文件 <code>.aicproj</code>（ZIP）：项目、场景、OIP 工程、版本、实验、报告；</li><li>导入始终创建新项目，保留场景/实验 ID，校验路径穿越与解压体积。</li></ul>
+<h3>3.6 演示与重置</h3>
+<ul><li>侧栏「一键演示」：自动选择有设备的演示场景 → 运行离线仿真 → 跳转分析结果；</li><li>系统设置「重置演示项目」：从 <code>demo_seed</code> 恢复演示数据，同名旧项目先归档；</li><li>工作台进度条与场景版本历史便于评委快速理解完整链路。</li></ul>
+<hr>
+<h2 id="sec-5">4. 关键技术</h2>
+<h3>4.1 统一场景模型</h3>
+<p><code>SceneDocument</code> 包含设备、显式连接、几何候选、校验结果、仿真设置与 OIP 原始工程。设备 ID 直接使用 OIP <code>part.id</code>，跨导入稳定；空间关系与业务关系分离：</p>
+<ul><li><code>geometry_candidates</code> 只是几何建议，不参与仿真；</li><li><code>connections</code> 是仿真唯一使用的显式物料流；</li><li>设备移动不会自动改写业务连接，只产生几何错位 warning。</li></ul>
+<h3>4.2 确定性离散事件引擎</h3>
+<p>引擎使用固定 <code>tick_sec</code>、单一 <code>random.Random(seed)</code>，不依赖 wall-clock。离线实验是确定性权威；实时实验由线程按 wall-clock 推进，只用于演示，不承诺逐位复现。</p>
+<p>金标回归（固定场景、seed=11、600s）：</p>
+<table><thead><tr><th>指标</th><th>值</th></tr></thead><tbody><tr><td>良品</td><td>66</td></tr><tr><td>不良</td><td>7</td></tr><tr><td>吞吐</td><td>396 件/小时</td></tr><tr><td>WIP</td><td>9</td></tr><tr><td>OEE</td><td>0.7956</td></tr></tbody></table>
+<h3>4.3 显式连接与校验</h3>
+<p>校验覆盖：设备/端口不存在、自连接、端口方向或物料类型不匹配、重复连接、仅展示设备混入物料流、物料流环路、缺少 Spawner/Despawner、从源不可达出口、非法位置/参数等。错误会阻止仿真并返回明确原因。</p>
+<h3>4.4 内容寻址存储与轻量版本</h3>
+<ul><li>OIP 工程按内容哈希存 <code>scenes/&lt;sid&gt;/oip/&lt;hash&gt;.json</code>，相同工程只存一份；</li><li><code>scene.json</code> 与版本快照只存 OIP 哈希引用；</li><li>列表页读取 <code>summary.json</code>，不再解析约 20MB 的工程；</li><li>旧格式数据保持可读，并提供 <code>tools/compact_scene_storage.py</code> 幂等迁移。</li></ul>
+<p>实测：两个演示项目与 <code>demo_seed</code> 合计从 173MB 降到 115MB；版本文件从约 19MB 降到 KB 级；<code>list_scenes</code> 从约 50ms 降到 1ms 以内。</p>
+<h3>4.5 大工程自动保存与旧缓存自愈</h3>
+<p>OIP 自带自动保存使用 localStorage，配额通常只有 5–10MB，而演示工程约 20MB，会触发 “Not saving”。平台在桥接层增加 IndexedDB 溢出层：</p>
+<ul><li>小键值仍走 localStorage；</li><li>OIP 工程键与超大值写入 IndexedDB，并按项目 + 场景隔离；</li><li>刷新后若存在未同步编辑，自动恢复并提示同步；</li><li>进入编辑器前经过同源 <code>reset.html</code>，注销 OIP 旧 Service Worker 并清理缓存；</li><li>内嵌模式禁用 SW 注册，避免继续加载旧版桥接脚本。</li></ul>
+<p>实测：20MB 工程 <code>persistProject()</code> 返回 ok，IndexedDB 记录 19.9MB；重载后提示“已恢复本地未同步编辑”；预置旧 SW（1 个 registration + 1 个 cache）后进入编辑器，两者均清零，0 告警。</p>
+<h3>4.6 缓存、接口瘦身与结构拆分</h3>
+<ul><li>Streamlit 项目/实验摘要按目录指纹缓存，写操作后自动失效；</li><li><code>SceneClient</code> 复用连接，避免每次重跑新建 HTTP 客户端；</li><li><code>GET /scenes/{sid}</code> 默认不返回约 20MB 的 OIP 工程；<code>load_scene(include_oip=False)</code> 让仿真/校验按需加载；</li><li>实时仿真管理器只保留最近 20 个已结束实例，实例 ID 全局唯一，避免内存持续增长；</li><li><code>factory_app.py</code> 从 4427 行拆分为约 1930 行主入口 + <code>legacy_pages.py</code> / <code>ui_shared.py</code> / <code>ui_cache.py</code>。</li></ul>
+<hr>
+<h2 id="sec-6">5. 性能与工程优化汇总</h2>
+<table><thead><tr><th>项目</th><th>优化前</th><th>优化后</th></tr></thead><tbody><tr><td>演示数据存储（含 demo_seed）</td><td>173MB</td><td>115MB</td></tr><tr><td>版本快照</td><td>约 19MB/份</td><td>KB 级</td></tr><tr><td>场景列表读取</td><td>约 50ms/项目</td><td>&lt;1ms/项目</td></tr><tr><td><code>GET /scenes/{sid}</code> 载荷</td><td>约 20MB（含 OIP）</td><td>默认不含 OIP</td></tr><tr><td>大工程自动保存</td><td>localStorage 配额失败</td><td>IndexedDB 正常保存 19.9MB</td></tr><tr><td>实时实例</td><td>永久累积</td><td>保留最近 20 个已结束</td></tr><tr><td>工作台入口文件</td><td>4427 行</td><td>约 1930 行</td></tr><tr><td>旧 RFTwin 页面</td><td>混在主入口</td><td>独立 <code>legacy_pages.py</code>，不参与启动</td></tr></tbody></table>
+<hr>
+<h2 id="sec-7">6. 测试与验证</h2>
+<h3>6.1 自动化测试</h3>
+<ul><li>全量 pytest：<strong>79 passed</strong>，约 37 秒；</li><li>覆盖：场景映射、连接校验、引擎确定性、版本幂等、分析/优化真实重跑、API 全链路、整包导出导入、装饰件映射、存储压缩、实时实例清理、演示数据重置、Streamlit AppTest；</li><li>新增金标 KPI 回归，防止引擎/映射改动悄悄改变演示结果。</li></ul>
+<h3>6.2 浏览器验证</h3>
+<table><thead><tr><th>项目</th><th>结果</th></tr></thead><tbody><tr><td>五页导航</td><td>平台总览 / 场景编辑器 / 建模分析工作台 / 实验历史 / 系统设置</td></tr><tr><td>页面渲染</td><td>五页 render-error 0、控制台错误 0</td></tr><tr><td>OIP 编辑器</td><td>加载 12 个部件，场景正常显示</td></tr><tr><td>版本历史</td><td>版本列表、差异、恢复控件正常渲染</td></tr><tr><td>演示重置</td><td>系统设置中重置面板正常</td></tr><tr><td>大工程自动保存</td><td>IndexedDB 19.9MB，0 告警，重载可恢复</td></tr></tbody></table>
+<h3>6.3 安装包验证</h3>
+<ul><li>安装包：<code>AIIndustrialFactory-Setup-1.1.1.exe</code>，124MB；</li><li>SHA256：<code>822153fad7fca6bca283619b42793e31f02eb7c5260aebf745469616863ffdac</code>；</li><li>静默安装 → 启动器启动 → 五页检查（0 渲染异常、0 控制台错误）→ 停止 → 卸载，全部通过；</li><li>首次启动自动载入两个演示项目；运行时不需要 Python / Node.js / Docker。</li></ul>
+<h3>6.4 演示结果（软件仿真）</h3>
+<p>基准场景（600s，seed 42）：</p>
+<table><thead><tr><th>指标</th><th>基准</th><th>优化后</th></tr></thead><tbody><tr><td>良品</td><td>70</td><td>97</td></tr><tr><td>吞吐</td><td>420 件/小时</td><td>582 件/小时</td></tr><tr><td>WIP</td><td>9</td><td>9</td></tr><tr><td>OEE</td><td>89.3%</td><td>79.9%</td></tr><tr><td>瓶颈</td><td>Conveyor A</td><td>—</td></tr></tbody></table>
+<p>优化为两台输送机 0.50 → 0.75 m/s。OEE 下降来自“提速换产能”的权衡，报告同时展示产能、周期与 OEE，不隐藏不利结果。</p>
+<p>EdgeCoder（同一场景任务集）：</p>
+<table><thead><tr><th>指标</th><th>结果</th></tr></thead><tbody><tr><td>任务数</td><td>80（视觉 70、质量 3、故障 1、监测 6）</td></tr><tr><td>动态调度满足率</td><td>约 96.25%</td></tr><tr><td>固定本地 / 固定云端</td><td>47.5% / 7.5%</td></tr></tbody></table>
+<hr>
+<h2 id="sec-8">7. 部署与交付</h2>
+<h3>7.1 源码运行</h3>
+<pre><code>cd C:/Users/Administrator/Desktop/aic
+python run_platform.py          # 或 start_platform.bat
+python stop_platform.py
+python -m pytest -q</code></pre>
+<p>默认服务：</p>
+<table><thead><tr><th>服务</th><th>端口</th><th>说明</th></tr></thead><tbody><tr><td>Streamlit 工作台</td><td>8502+</td><td>用户唯一入口</td></tr><tr><td>场景 FastAPI</td><td>8701+</td><td>场景/仿真/分析/优化/报告</td></tr><tr><td>OIP 静态编辑器</td><td>8610+</td><td><code>frontend/oip/dist</code></td></tr><tr><td>RFTwin Live（旧页面）</td><td>8020+</td><td>代码保留，按需启动</td></tr></tbody></table>
+<h3>7.2 安装包</h3>
+<ul><li>安装包：<code>release/AIIndustrialFactory-Setup-1.1.1.exe</code></li><li>交付目录：<code>D:\AI数字工厂-交付</code></li><li>安装位置：<code>%LOCALAPPDATA%\Programs\AIIndustrialFactory</code></li><li>数据目录：<code>%LOCALAPPDATA%\AIIndustrialFactory</code></li><li>重建：<code>powershell -ExecutionPolicy Bypass -File build_installer.ps1</code></li></ul>
+<h3>7.3 数据与日志</h3>
+<pre><code>data/projects/&lt;project_id&gt;/
+├─ project.json
+├─ experiments/&lt;experiment_id&gt;.json
+└─ scenes/&lt;scene_id&gt;/
+   ├─ scene.json                 # 统一场景（OIP 哈希引用）
+   ├─ summary.json               # 列表摘要
+   ├─ oip/&lt;hash&gt;.json            # OIP 工程，内容寻址
+   ├─ versions/0001.json ...     # 不可变版本
+   └─ reports/&lt;report_id&gt;.{json,md,html}</code></pre>
+<p>日志：<code>data/logs/</code>（<code>scene_api.log</code>、<code>oip-*.log</code>、<code>rftwin-*.log</code>）。</p>
+<hr>
+<h2 id="sec-9">8. 已知限制与边界</h2>
+<ol><li>OIP 仍为 pre-1.0，已固定提交；升级需重新验证桥接、映射与构建。</li><li>连接推导是几何启发式；track/mount/edge/chain 等吸附关系未完整复刻。</li><li>引擎为单服务台简化模型，不支持复杂合流/分流优先级与累积输送物理。</li><li>OEE 为线级简化公式；提速后 OEE 可能下降，报告如实展示权衡。</li><li>实时实验由 wall-clock 推进，非逐位复现；离线实验才是确定性权威。</li><li>当前仅监听 127.0.0.1，无鉴权与多用户；远程部署需反向代理与认证。</li><li>优化器为规则式有限候选，不做网格/贝叶斯搜索。</li><li>所有 KPI、OEE、能耗、边缘时延均为软件仿真，不是真实工厂或 6G 实测。</li></ol>
+<hr>
+<h2 id="sec-10">9. 后续规划</h2>
+<ol><li>增加实验结果 CSV 导出与打印友好的报告样式；</li><li>适配 1366×768 等小屏分辨率；</li><li>增加 <code>tools/doctor.py</code> 现场自检（依赖、OIP dist、演示数据、端口、磁盘）；</li><li>扩展引擎：合流优先级、缓冲策略、换型/班次；</li><li>扩展 OIP 部件映射与吸附类型候选连接；</li><li>引入鉴权、多用户与审计日志。</li></ol>
+<hr>
+<h2 id="sec-11">附录 A：常用命令</h2>
+<pre><code># 开发运行
+python run_platform.py
+python stop_platform.py
+
+# 测试
+python -m pytest -q
+
+# 演示数据
+python demo_scene/load_demo.py --duration 600
+
+# 存储迁移（幂等）
+python tools/compact_scene_storage.py --root data/projects demo_seed/projects
+
+# 构建安装包
+powershell -ExecutionPolicy Bypass -File build_installer.ps1</code></pre>
+<h2 id="sec-12">附录 B：核心目录</h2>
+<pre><code>factory_app.py                     Streamlit 五页入口
+ui_cache.py                        Streamlit 数据缓存
+ui_shared.py                       共用 UI helper
+legacy_pages.py                    已下线的旧 RFTwin/EdgeCoder 页面
+integration/scene/
+  models.py                        统一设备/连接/场景模型
+  mapping.py                       OIP 部件 → 仿真类型
+  connections.py                   候选连接、显式连接校验、拓扑排序
+  store.py                         场景/版本/摘要/OIP 内容寻址存储
+  engine.py                        Python 离散事件引擎（KPI 权威）
+  manager.py                       实时仿真线程与内存管理
+  edge.py                          场景事件 → EdgeCoder 任务
+  analysis.py                      瓶颈分析、规则优化、真实重跑
+  report.py                        JSON/Markdown/HTML 报告
+  api.py                           场景 API
+  client.py                        Streamlit → API 客户端
+frontend/oip/                      OIP 子项目（固定 dcebf53）+ 桥接 + dist
+demo_seed/                         安装包演示数据
+demo_scene/                        开发演示场景与结果
+tests/                             自动化测试
+tools/                             维护与迁移工具
+docs/                              报告、演示流程、评委说明</code></pre>
+<h2 id="sec-13">附录 C：结论</h2>
+<p>本项目已完成“三维搭建 → 生产仿真 → 数据分析 → 边缘调度 → 优化归档 → 报告交付”的完整闭环，并在存储、性能、界面结构、编辑器持久化与安装交付方面完成了一轮系统性优化。所有结果均可复现、可追溯，且明确标注为软件仿真。当前版本 1.1.1 已具备面向评委演示与现场交付的完整形态。</p>
+</main>
+</body>
+</html>

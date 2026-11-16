@@ -1,0 +1,107 @@
+{
+  "version": 7,
+  "name": "AIC 动画测试4",
+  "scene": {
+    "version": 4,
+    "parts": [
+      {
+        "id": "pt_1",
+        "type": "part",
+        "packageId": "oip.box-spawner",
+        "name": "Spawner",
+        "position": [
+          -6.5,
+          2.5,
+          0.0
+        ],
+        "rotationY": 0.0,
+        "params": {
+          "boxesPerMinute": 15,
+          "product": "oip.box",
+          "fixedRate": true
+        }
+      },
+      {
+        "id": "pt_2",
+        "type": "part",
+        "packageId": "oip.roller-conveyor",
+        "name": "Conveyor A",
+        "position": [
+          -4.5,
+          2.0,
+          0.0
+        ],
+        "rotationY": 0.0,
+        "params": {
+          "length": 4.0,
+          "width": 1.524,
+          "speed": 0.5,
+          "fpmUnits": false
+        }
+      },
+      {
+        "id": "pt_3",
+        "type": "part",
+        "packageId": "oip.color-sensor",
+        "name": "Inspection B",
+        "position": [
+          -2.2,
+          2.9,
+          1.0
+        ],
+        "rotationY": 0.0,
+        "params": {
+          "maxRange": 2.0
+        }
+      },
+      {
+        "id": "pt_4",
+        "type": "part",
+        "packageId": "oip.six-axis-robot",
+        "name": "Robot C",
+        "position": [
+          -1.2,
+          2.0,
+          1.4
+        ],
+        "rotationY": 0.0,
+        "params": {
+          "scale": 1.0,
+          "speed": 120
+        }
+      },
+      {
+        "id": "pt_5",
+        "type": "part",
+        "packageId": "oip.roller-conveyor",
+        "name": "Conveyor D",
+        "position": [
+          -0.5,
+          2.0,
+          0.0
+        ],
+        "rotationY": 0.0,
+        "params": {
+          "length": 4.0,
+          "width": 1.524,
+          "speed": 0.5,
+          "fpmUnits": false
+        }
+      },
+      {
+        "id": "pt_6",
+        "type": "part",
+        "packageId": "oip.despawner",
+        "name": "Despawner",
+        "position": [
+          1.7,
+          2.0,
+          0.0
+        ],
+        "rotationY": 0.0,
+        "params": {}
+      }
+    ]
+  },
+  "packages": []
+}

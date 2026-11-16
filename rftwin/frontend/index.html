@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>RFTwin · 机器人工厂数字孪生</title>
+    <script>
+      /* 统一平台默认中文：用户未手动选择过语言时写入 zh；已选择则尊重原选择。 */
+      try {
+        if (!localStorage.getItem("twin.lang")) localStorage.setItem("twin.lang", "zh");
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

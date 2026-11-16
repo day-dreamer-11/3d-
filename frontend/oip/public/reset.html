@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/favicon-32.png">
+  <title>AIC 场景编辑器加载中…</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: #101820; color: #dbe9f7;
+      font: 14px/1.6 system-ui, "Microsoft YaHei", sans-serif; }
+    main { height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; }
+    p { margin: 0; opacity: .85; }
+  </style>
+</head>
+<body>
+<main><p>正在清理旧版编辑器缓存并加载场景…</p></main>
+<script>
+(function () {
+  var target = '/app/'
+  try {
+    var to = new URLSearchParams(location.search).get('to')
+    if (to) {
+      var u = new URL(to, location.origin)
+      if (u.origin === location.origin) target = u.href
+    }
+  } catch (e) {}
+
+  var done = false
+  function go() {
+    if (done) return
+    done = true
+    location.replace(target)
+  }
+
+  var tasks = []
+  if ('serviceWorker' in navigator) {
+    try {
+      tasks.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+        return Promise.all(regs.map(function (r) { return r.unregister() }))
+      }).catch(function () {}))
+    } catch (e) {}
+  }
+  if (window.caches) {
+    try {
+      tasks.push(caches.keys().then(function (keys) {
+        return Promise.all(keys.map(function (k) { return caches.delete(k) }))
+      }).catch(function () {}))
+    } catch (e) {}
+  }
+  Promise.all(tasks).then(go, go)
+  setTimeout(go, 1500)
+})()
+</script>
+</body>
+</html>

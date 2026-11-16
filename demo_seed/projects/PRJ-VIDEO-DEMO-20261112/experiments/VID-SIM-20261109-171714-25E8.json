@@ -1,0 +1,1922 @@
+{
+  "schema_version": "2.0",
+  "experiment_id": "VID-SIM-20261109-171714-25E8",
+  "project_id": "PRJ-VIDEO-DEMO-20261112",
+  "scene_id": "SCN-20261030-234230-6C86",
+  "scene_version": 8,
+  "kind": "factory",
+  "source": "scene_engine_live",
+  "factory_engine": "scene_discrete_event",
+  "created_at": "2026-11-09T17:17:39",
+  "label": "实时场景仿真",
+  "config": {
+    "duration_sec": 600.0,
+    "duration_min": 10.0,
+    "seed": 42,
+    "tick_sec": 0.25,
+    "scene_hash": "44ed4682e587a237e956",
+    "scene_snapshot": {
+      "scene_id": "SCN-20261030-234230-6C86",
+      "version": 8,
+      "name": "六设备产线（可动画演示）",
+      "devices": [
+        {
+          "id": "pt_1",
+          "type": "spawner",
+          "name": "Spawner",
+          "position": [
+            -6.5,
+            2.5,
+            0.0
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.96
+          },
+          "params": {
+            "interval_sec": 4.0,
+            "batch_size": 1,
+            "total_limit": 0,
+            "capacity": 1,
+            "power_kw": 0.3,
+            "failure_prob_per_hour": 0.1,
+            "mttr_min": 1.0,
+            "simulation_notes": "",
+            "boxes_per_minute": 15.0,
+            "product_type": "oip.box"
+          },
+          "simulation_type": "spawner",
+          "ports": [
+            {
+              "id": "out",
+              "name": "Output",
+              "direction": "output",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                1.0,
+                0.0
+              ]
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.box-spawner",
+            "oip_part_type": "part",
+            "oip_part_name": "Spawner",
+            "defaults_applied": [],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_2",
+          "type": "conveyor",
+          "name": "Conveyor A",
+          "position": [
+            -4.5,
+            2.0,
+            0.0
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 4.0,
+            "width": 1.524,
+            "height": 0.9
+          },
+          "params": {
+            "item_spacing_m": 0.6,
+            "power_kw": 0.6,
+            "failure_prob_per_hour": 0.4,
+            "mttr_min": 2.0,
+            "direction": 1,
+            "capacity": 7,
+            "simulation_notes": "",
+            "speed_mps": 0.5,
+            "length_m": 4.0,
+            "width_m": 1.524,
+            "deck_angle_deg": 0.0
+          },
+          "simulation_type": "conveyor",
+          "ports": [
+            {
+              "id": "in",
+              "name": "Input",
+              "direction": "input",
+              "flow": "material",
+              "offset": [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "id": "out",
+              "name": "Output",
+              "direction": "output",
+              "flow": "material",
+              "offset": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                1.0,
+                0.0
+              ]
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.roller-conveyor",
+            "oip_part_type": "part",
+            "oip_part_name": "Conveyor A",
+            "defaults_applied": [
+              "speed_mps"
+            ],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_3",
+          "type": "inspection",
+          "name": "Inspection B",
+          "position": [
+            -2.2,
+            1.98,
+            0.8190000000000001
+          ],
+          "rotation": {
+            "yaw": 3.141592653589793,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.15,
+            "width": 0.15,
+            "height": 0.3
+          },
+          "params": {
+            "cycle_sec": 2.0,
+            "pass_rate": 0.95,
+            "accuracy": 0.98,
+            "capacity": 1,
+            "power_kw": 0.8,
+            "failure_prob_per_hour": 0.3,
+            "mttr_min": 1.5,
+            "range_m": 2.0,
+            "inspection_kind": "color-sensor",
+            "simulation_notes": ""
+          },
+          "simulation_type": "inspection",
+          "ports": [
+            {
+              "id": "in",
+              "name": "Input",
+              "direction": "input",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": null
+            },
+            {
+              "id": "out",
+              "name": "Output",
+              "direction": "output",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": null
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.color-sensor",
+            "oip_part_type": "part",
+            "oip_part_name": "Inspection B",
+            "defaults_applied": [],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_4",
+          "type": "robot",
+          "name": "Robot C",
+          "position": [
+            -1.2,
+            2.0,
+            1.4
+          ],
+          "rotation": {
+            "yaw": -0.008475803666156526,
+            "pitch": 0.0765674986880672,
+            "roll": 0.02003806942067119
+          },
+          "dimensions": {
+            "length": 1.88,
+            "width": 0.83,
+            "height": 3.49
+          },
+          "params": {
+            "cycle_sec": 4.0,
+            "reach_m": 0.94,
+            "payload_kg": 10.0,
+            "capacity": 1,
+            "power_kw": 2.5,
+            "failure_prob_per_hour": 0.5,
+            "mttr_min": 3.0,
+            "oip_speed": 120.0,
+            "simulation_notes": ""
+          },
+          "simulation_type": "robot",
+          "ports": [
+            {
+              "id": "in",
+              "name": "Input",
+              "direction": "input",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": null
+            },
+            {
+              "id": "out",
+              "name": "Output",
+              "direction": "output",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": null
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.six-axis-robot",
+            "oip_part_type": "part",
+            "oip_part_name": "Robot C",
+            "defaults_applied": [],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_5",
+          "type": "conveyor",
+          "name": "Conveyor D",
+          "position": [
+            -0.5,
+            2.0,
+            0.0
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 4.0,
+            "width": 1.524,
+            "height": 0.9
+          },
+          "params": {
+            "item_spacing_m": 0.6,
+            "power_kw": 0.6,
+            "failure_prob_per_hour": 0.4,
+            "mttr_min": 2.0,
+            "direction": 1,
+            "capacity": 7,
+            "simulation_notes": "",
+            "speed_mps": 0.5,
+            "length_m": 4.0,
+            "width_m": 1.524,
+            "deck_angle_deg": 0.0
+          },
+          "simulation_type": "conveyor",
+          "ports": [
+            {
+              "id": "in",
+              "name": "Input",
+              "direction": "input",
+              "flow": "material",
+              "offset": [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                -1.0,
+                0.0
+              ]
+            },
+            {
+              "id": "out",
+              "name": "Output",
+              "direction": "output",
+              "flow": "material",
+              "offset": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                1.0,
+                0.0
+              ]
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.roller-conveyor",
+            "oip_part_type": "part",
+            "oip_part_name": "Conveyor D",
+            "defaults_applied": [
+              "speed_mps"
+            ],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_6",
+          "type": "despawner",
+          "name": "Despawner",
+          "position": [
+            1.7,
+            2.0,
+            0.0
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 2.0,
+            "width": 2.0,
+            "height": 1.0
+          },
+          "params": {
+            "capacity": 100000,
+            "power_kw": 0.1,
+            "failure_prob_per_hour": 0.0,
+            "mttr_min": 0.0,
+            "count_only": false,
+            "simulation_notes": ""
+          },
+          "simulation_type": "despawner",
+          "ports": [
+            {
+              "id": "in",
+              "name": "Input",
+              "direction": "input",
+              "flow": "material",
+              "offset": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "out": [
+                -1.0,
+                0.0
+              ]
+            }
+          ],
+          "metadata": {
+            "oip_package_id": "oip.despawner",
+            "oip_part_type": "part",
+            "oip_part_name": "Despawner",
+            "defaults_applied": [],
+            "source": "oip_mapping"
+          }
+        },
+        {
+          "id": "pt_7",
+          "type": "decoration",
+          "name": "装饰·人字梯",
+          "position": [
+            -2.1039421535975347,
+            0.0,
+            3.936371651847895
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-7",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        },
+        {
+          "id": "pt_8",
+          "type": "decoration",
+          "name": "装饰·储物车",
+          "position": [
+            3.9363716518478933,
+            0.0,
+            -2.103942153597533
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-8",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        },
+        {
+          "id": "pt_9",
+          "type": "decoration",
+          "name": "装饰·地滑牌",
+          "position": [
+            1.7810807736489505,
+            0.0,
+            6.124122871334315
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-9",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        },
+        {
+          "id": "pt_10",
+          "type": "decoration",
+          "name": "装饰·工具车",
+          "position": [
+            6.124122871334313,
+            0.0,
+            1.7810807736489522
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-10",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        },
+        {
+          "id": "pt_11",
+          "type": "decoration",
+          "name": "装饰·焊接推车",
+          "position": [
+            -2.6201525782243653,
+            0.0,
+            0.4482015187265773
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-11",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        },
+        {
+          "id": "pt_12",
+          "type": "decoration",
+          "name": "装饰·配电箱",
+          "position": [
+            0.44820151872657554,
+            0.0,
+            -2.6201525782243635
+          ],
+          "rotation": {
+            "yaw": 0.0,
+            "pitch": 0.0,
+            "roll": 0.0
+          },
+          "dimensions": {
+            "length": 0.5,
+            "width": 0.5,
+            "height": 0.5
+          },
+          "params": {},
+          "simulation_type": "display_only",
+          "ports": [],
+          "metadata": {
+            "oip_package_id": "user.part-12",
+            "oip_part_type": "part",
+            "unsupported_reason": "装饰模型（仅三维展示）",
+            "decoration": true
+          }
+        }
+      ],
+      "connections": [
+        {
+          "id": "conn_6ddae60988",
+          "source_device": "pt_1",
+          "source_port": "out",
+          "target_device": "pt_2",
+          "target_port": "in",
+          "connection_type": "material_flow",
+          "metadata": {
+            "source": "geometry_derived_initial",
+            "gap_m": 1.0,
+            "direction_dot": -1.0,
+            "confidence": "medium"
+          }
+        },
+        {
+          "id": "conn_fc895f46c1",
+          "source_device": "pt_2",
+          "source_port": "out",
+          "target_device": "pt_3",
+          "target_port": "in",
+          "connection_type": "material_flow",
+          "metadata": {
+            "source": "geometry_derived_initial",
+            "gap_m": 0.1,
+            "direction_dot": null,
+            "confidence": "high"
+          }
+        },
+        {
+          "id": "conn_3ee44f8970",
+          "source_device": "pt_3",
+          "source_port": "out",
+          "target_device": "pt_4",
+          "target_port": "in",
+          "connection_type": "material_flow",
+          "metadata": {
+            "source": "geometry_derived_initial",
+            "gap_m": 1.4,
+            "direction_dot": null,
+            "confidence": "medium"
+          }
+        },
+        {
+          "id": "conn_24269e63f5",
+          "source_device": "pt_4",
+          "source_port": "out",
+          "target_device": "pt_5",
+          "target_port": "in",
+          "connection_type": "material_flow",
+          "metadata": {
+            "source": "geometry_derived_initial",
+            "gap_m": 1.5,
+            "direction_dot": null,
+            "confidence": "medium"
+          }
+        },
+        {
+          "id": "conn_cbc1f46493",
+          "source_device": "pt_5",
+          "source_port": "out",
+          "target_device": "pt_6",
+          "target_port": "in",
+          "connection_type": "material_flow",
+          "metadata": {
+            "source": "geometry_derived_initial",
+            "gap_m": 0.9,
+            "direction_dot": -1.0,
+            "confidence": "medium"
+          }
+        }
+      ],
+      "simulation_settings": {
+        "duration_sec": 1800,
+        "seed": 42,
+        "tick_sec": 0.25
+      }
+    }
+  },
+  "param_hash": "fc55980b0432dcf9",
+  "duration_min": 10.0,
+  "kpis": {
+    "total_output": 4,
+    "good_units": 4,
+    "defect_units": 0,
+    "wip": 9,
+    "throughput_uph": 285.15,
+    "oee": {
+      "availability": 1.0,
+      "performance": 0.6337,
+      "quality": 1.0,
+      "oee": 0.6337,
+      "target_oee": 0.85
+    },
+    "first_pass_yield": 1.0,
+    "defect_rate": 0.0,
+    "avg_lead_time_sec": 28.25,
+    "runtime_sec": 50.5,
+    "downtime_sec": 0.0,
+    "energy_kwh_total": 0.0334,
+    "created_units": 13
+  },
+  "window_metrics": {
+    "minutes": 0,
+    "good_units": 4,
+    "defect_units": 0,
+    "avg_throughput_uph": 285.15,
+    "avg_oee": 0.6337
+  },
+  "flow_history": [],
+  "cell_flow_history": [],
+  "flow_insight": {
+    "bottleneck": "pt_2",
+    "bottleneck_name": "Conveyor A",
+    "utilization": {
+      "pt_1": 0.0,
+      "pt_2": 0.9653,
+      "pt_3": 0.2079,
+      "pt_4": 0.3762,
+      "pt_5": 0.698,
+      "pt_6": 0.0
+    },
+    "rates_uph": {
+      "pt_1": 926.73,
+      "pt_2": 427.72,
+      "pt_3": 427.72,
+      "pt_4": 356.44,
+      "pt_5": 285.15,
+      "pt_6": 285.15
+    },
+    "reason": "Conveyor A 利用率 96.5%，队列 6，阻塞 0s；节拍 8.00s。"
+  },
+  "device_metrics": [
+    {
+      "device_id": "pt_1",
+      "name": "Spawner",
+      "type": "spawner",
+      "simulation_type": "spawner",
+      "state": "idle",
+      "state_since": 48.5,
+      "utilization": 0.0,
+      "busy_sec": 0.0,
+      "blocked_sec": 0.0,
+      "starved_sec": 0.0,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 1,
+      "cycle_sec": 4.0,
+      "processed": 13,
+      "good": 0,
+      "defect": 0,
+      "done": 0,
+      "power_kw": 0.3,
+      "energy_kwh": 0.0004,
+      "last_update": "2026-11-09T17:17:39"
+    },
+    {
+      "device_id": "pt_2",
+      "name": "Conveyor A",
+      "type": "conveyor",
+      "simulation_type": "conveyor",
+      "state": "running",
+      "state_since": 0.25,
+      "utilization": 0.9653,
+      "busy_sec": 48.75,
+      "blocked_sec": 0.0,
+      "starved_sec": 0.0,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 6,
+      "occupancy": 7,
+      "capacity": 7,
+      "cycle_sec": 8.0,
+      "processed": 6,
+      "good": 0,
+      "defect": 0,
+      "done": 0,
+      "power_kw": 0.6,
+      "energy_kwh": 0.0082,
+      "last_update": "2026-11-09T17:17:39"
+    },
+    {
+      "device_id": "pt_3",
+      "name": "Inspection B",
+      "type": "inspection",
+      "simulation_type": "inspection",
+      "state": "idle",
+      "state_since": 50.25,
+      "utilization": 0.2079,
+      "busy_sec": 10.5,
+      "blocked_sec": 0.0,
+      "starved_sec": 38.5,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 1,
+      "cycle_sec": 2.0,
+      "processed": 6,
+      "good": 6,
+      "defect": 0,
+      "done": 0,
+      "power_kw": 0.8,
+      "energy_kwh": 0.0032,
+      "last_update": "2026-11-09T17:17:39"
+    },
+    {
+      "device_id": "pt_4",
+      "name": "Robot C",
+      "type": "robot",
+      "simulation_type": "robot",
+      "state": "processing",
+      "state_since": 50.25,
+      "utilization": 0.3762,
+      "busy_sec": 19.0,
+      "blocked_sec": 0.0,
+      "starved_sec": 30.0,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 0,
+      "occupancy": 1,
+      "capacity": 1,
+      "cycle_sec": 4.0,
+      "processed": 5,
+      "good": 0,
+      "defect": 0,
+      "done": 0,
+      "power_kw": 2.5,
+      "energy_kwh": 0.0154,
+      "last_update": "2026-11-09T17:17:39"
+    },
+    {
+      "device_id": "pt_5",
+      "name": "Conveyor D",
+      "type": "conveyor",
+      "simulation_type": "conveyor",
+      "state": "running",
+      "state_since": 14.25,
+      "utilization": 0.698,
+      "busy_sec": 35.25,
+      "blocked_sec": 0.0,
+      "starved_sec": 14.0,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 0,
+      "occupancy": 1,
+      "capacity": 7,
+      "cycle_sec": 8.0,
+      "processed": 4,
+      "good": 0,
+      "defect": 0,
+      "done": 0,
+      "power_kw": 0.6,
+      "energy_kwh": 0.0061,
+      "last_update": "2026-11-09T17:17:39"
+    },
+    {
+      "device_id": "pt_6",
+      "name": "Despawner",
+      "type": "despawner",
+      "simulation_type": "despawner",
+      "state": "idle",
+      "state_since": 46.5,
+      "utilization": 0.0,
+      "busy_sec": 0.0,
+      "blocked_sec": 0.0,
+      "starved_sec": 49.5,
+      "failed_sec": 0.0,
+      "failure_count": 0,
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 100000,
+      "cycle_sec": 0.05,
+      "processed": 4,
+      "good": 0,
+      "defect": 0,
+      "done": 4,
+      "power_kw": 0.1,
+      "energy_kwh": 0.0001,
+      "last_update": "2026-11-09T17:17:39"
+    }
+  ],
+  "station_metrics": [],
+  "cell_metrics": [],
+  "device_states": [
+    {
+      "device_id": "pt_1",
+      "name": "Spawner",
+      "state": "idle",
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 1,
+      "processed": 13,
+      "utilization": 0.0,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    },
+    {
+      "device_id": "pt_2",
+      "name": "Conveyor A",
+      "state": "running",
+      "queue": 6,
+      "occupancy": 7,
+      "capacity": 7,
+      "processed": 6,
+      "utilization": 0.9653,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    },
+    {
+      "device_id": "pt_3",
+      "name": "Inspection B",
+      "state": "idle",
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 1,
+      "processed": 6,
+      "utilization": 0.2079,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    },
+    {
+      "device_id": "pt_4",
+      "name": "Robot C",
+      "state": "processing",
+      "queue": 0,
+      "occupancy": 1,
+      "capacity": 1,
+      "processed": 5,
+      "utilization": 0.3762,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    },
+    {
+      "device_id": "pt_5",
+      "name": "Conveyor D",
+      "state": "running",
+      "queue": 0,
+      "occupancy": 1,
+      "capacity": 7,
+      "processed": 4,
+      "utilization": 0.698,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    },
+    {
+      "device_id": "pt_6",
+      "name": "Despawner",
+      "state": "idle",
+      "queue": 0,
+      "occupancy": 0,
+      "capacity": 100000,
+      "processed": 4,
+      "utilization": 0.0,
+      "timestamp": "2026-11-09T17:17:39",
+      "sim_time_sec": 50.5
+    }
+  ],
+  "orders": [],
+  "amr_kpis": {},
+  "recent_inspections": [
+    {
+      "part_id": "pt_1-00001",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:10",
+      "sim_tick": 41
+    },
+    {
+      "part_id": "pt_1-00002",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:18",
+      "sim_tick": 73
+    },
+    {
+      "part_id": "pt_1-00003",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:26",
+      "sim_tick": 105
+    },
+    {
+      "part_id": "pt_1-00004",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:34",
+      "sim_tick": 137
+    },
+    {
+      "part_id": "pt_1-00005",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:42",
+      "sim_tick": 169
+    },
+    {
+      "part_id": "pt_1-00006",
+      "device_id": "pt_3",
+      "first_pass": true,
+      "ground_truth": "PASS",
+      "sim_time": "T+00:00:50",
+      "sim_tick": 201
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "sim_time_sec": 0.25,
+      "sim_time": "T+00:00:00",
+      "sim_tick": 1,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00001",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 2,
+      "sim_time_sec": 0.25,
+      "sim_time": "T+00:00:00",
+      "sim_tick": 1,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 进入 Conveyor A",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 3,
+      "sim_time_sec": 4.25,
+      "sim_time": "T+00:00:04",
+      "sim_tick": 17,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00002",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 4,
+      "sim_time_sec": 8.25,
+      "sim_time": "T+00:00:08",
+      "sim_tick": 33,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00003",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 5,
+      "sim_time_sec": 8.25,
+      "sim_time": "T+00:00:08",
+      "sim_tick": 33,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 进入 Conveyor A",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 6,
+      "sim_time_sec": 8.25,
+      "sim_time": "T+00:00:08",
+      "sim_tick": 33,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 进入 Inspection B",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 7,
+      "sim_time_sec": 10.25,
+      "sim_time": "T+00:00:10",
+      "sim_tick": 41,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 通过 Inspection B 检测",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 8,
+      "sim_time_sec": 10.25,
+      "sim_time": "T+00:00:10",
+      "sim_tick": 41,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 9,
+      "sim_time_sec": 10.25,
+      "sim_time": "T+00:00:10",
+      "sim_tick": 41,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 进入 Robot C",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 10,
+      "sim_time_sec": 12.25,
+      "sim_time": "T+00:00:12",
+      "sim_tick": 49,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00004",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 11,
+      "sim_time_sec": 14.25,
+      "sim_time": "T+00:00:14",
+      "sim_tick": 57,
+      "event_type": "STARVED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Robot C 缺料等待"
+    },
+    {
+      "seq": 12,
+      "sim_time_sec": 14.25,
+      "sim_time": "T+00:00:14",
+      "sim_tick": 57,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_5",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 进入 Conveyor D",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 13,
+      "sim_time_sec": 16.25,
+      "sim_time": "T+00:00:16",
+      "sim_tick": 65,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00005",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 14,
+      "sim_time_sec": 16.25,
+      "sim_time": "T+00:00:16",
+      "sim_tick": 65,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 进入 Conveyor A",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 15,
+      "sim_time_sec": 16.25,
+      "sim_time": "T+00:00:16",
+      "sim_tick": 65,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 进入 Inspection B",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 16,
+      "sim_time_sec": 18.25,
+      "sim_time": "T+00:00:18",
+      "sim_tick": 73,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 通过 Inspection B 检测",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 17,
+      "sim_time_sec": 18.25,
+      "sim_time": "T+00:00:18",
+      "sim_tick": 73,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 18,
+      "sim_time_sec": 18.25,
+      "sim_time": "T+00:00:18",
+      "sim_tick": 73,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 进入 Robot C",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 19,
+      "sim_time_sec": 20.25,
+      "sim_time": "T+00:00:20",
+      "sim_tick": 81,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00006",
+      "item_id": "pt_1-00006"
+    },
+    {
+      "seq": 20,
+      "sim_time_sec": 22.25,
+      "sim_time": "T+00:00:22",
+      "sim_tick": 89,
+      "event_type": "STARVED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Robot C 缺料等待"
+    },
+    {
+      "seq": 21,
+      "sim_time_sec": 22.25,
+      "sim_time": "T+00:00:22",
+      "sim_tick": 89,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_5",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 进入 Conveyor D",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 22,
+      "sim_time_sec": 22.25,
+      "sim_time": "T+00:00:22",
+      "sim_tick": 89,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 进入 Despawner",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 23,
+      "sim_time_sec": 22.5,
+      "sim_time": "T+00:00:22",
+      "sim_tick": 90,
+      "event_type": "DESPAWNED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00001 到达出口 Despawner",
+      "item_id": "pt_1-00001"
+    },
+    {
+      "seq": 24,
+      "sim_time_sec": 24.25,
+      "sim_time": "T+00:00:24",
+      "sim_tick": 97,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00007",
+      "item_id": "pt_1-00007"
+    },
+    {
+      "seq": 25,
+      "sim_time_sec": 24.25,
+      "sim_time": "T+00:00:24",
+      "sim_tick": 97,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 进入 Conveyor A",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 26,
+      "sim_time_sec": 24.25,
+      "sim_time": "T+00:00:24",
+      "sim_tick": 97,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 进入 Inspection B",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 27,
+      "sim_time_sec": 26.25,
+      "sim_time": "T+00:00:26",
+      "sim_tick": 105,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 通过 Inspection B 检测",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 28,
+      "sim_time_sec": 26.25,
+      "sim_time": "T+00:00:26",
+      "sim_tick": 105,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 29,
+      "sim_time_sec": 26.25,
+      "sim_time": "T+00:00:26",
+      "sim_tick": 105,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 进入 Robot C",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 30,
+      "sim_time_sec": 28.25,
+      "sim_time": "T+00:00:28",
+      "sim_tick": 113,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00008",
+      "item_id": "pt_1-00008"
+    },
+    {
+      "seq": 31,
+      "sim_time_sec": 30.25,
+      "sim_time": "T+00:00:30",
+      "sim_tick": 121,
+      "event_type": "STARVED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Robot C 缺料等待"
+    },
+    {
+      "seq": 32,
+      "sim_time_sec": 30.25,
+      "sim_time": "T+00:00:30",
+      "sim_tick": 121,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_5",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 进入 Conveyor D",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 33,
+      "sim_time_sec": 30.25,
+      "sim_time": "T+00:00:30",
+      "sim_tick": 121,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 进入 Despawner",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 34,
+      "sim_time_sec": 30.5,
+      "sim_time": "T+00:00:30",
+      "sim_tick": 122,
+      "event_type": "DESPAWNED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00002 到达出口 Despawner",
+      "item_id": "pt_1-00002"
+    },
+    {
+      "seq": 35,
+      "sim_time_sec": 32.25,
+      "sim_time": "T+00:00:32",
+      "sim_tick": 129,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00009",
+      "item_id": "pt_1-00009"
+    },
+    {
+      "seq": 36,
+      "sim_time_sec": 32.25,
+      "sim_time": "T+00:00:32",
+      "sim_tick": 129,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00005 进入 Conveyor A",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 37,
+      "sim_time_sec": 32.25,
+      "sim_time": "T+00:00:32",
+      "sim_tick": 129,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 进入 Inspection B",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 38,
+      "sim_time_sec": 34.25,
+      "sim_time": "T+00:00:34",
+      "sim_tick": 137,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 通过 Inspection B 检测",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 39,
+      "sim_time_sec": 34.25,
+      "sim_time": "T+00:00:34",
+      "sim_tick": 137,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 40,
+      "sim_time_sec": 34.25,
+      "sim_time": "T+00:00:34",
+      "sim_tick": 137,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 进入 Robot C",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 41,
+      "sim_time_sec": 36.25,
+      "sim_time": "T+00:00:36",
+      "sim_tick": 145,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00010",
+      "item_id": "pt_1-00010"
+    },
+    {
+      "seq": 42,
+      "sim_time_sec": 38.25,
+      "sim_time": "T+00:00:38",
+      "sim_tick": 153,
+      "event_type": "STARVED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Robot C 缺料等待"
+    },
+    {
+      "seq": 43,
+      "sim_time_sec": 38.25,
+      "sim_time": "T+00:00:38",
+      "sim_tick": 153,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_5",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 进入 Conveyor D",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 44,
+      "sim_time_sec": 38.25,
+      "sim_time": "T+00:00:38",
+      "sim_tick": 153,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 进入 Despawner",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 45,
+      "sim_time_sec": 38.5,
+      "sim_time": "T+00:00:38",
+      "sim_tick": 154,
+      "event_type": "DESPAWNED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00003 到达出口 Despawner",
+      "item_id": "pt_1-00003"
+    },
+    {
+      "seq": 46,
+      "sim_time_sec": 40.25,
+      "sim_time": "T+00:00:40",
+      "sim_tick": 161,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00011",
+      "item_id": "pt_1-00011"
+    },
+    {
+      "seq": 47,
+      "sim_time_sec": 40.25,
+      "sim_time": "T+00:00:40",
+      "sim_tick": 161,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00006 进入 Conveyor A",
+      "item_id": "pt_1-00006"
+    },
+    {
+      "seq": 48,
+      "sim_time_sec": 40.25,
+      "sim_time": "T+00:00:40",
+      "sim_tick": 161,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00005 进入 Inspection B",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 49,
+      "sim_time_sec": 42.25,
+      "sim_time": "T+00:00:42",
+      "sim_tick": 169,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00005 通过 Inspection B 检测",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 50,
+      "sim_time_sec": 42.25,
+      "sim_time": "T+00:00:42",
+      "sim_tick": 169,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 51,
+      "sim_time_sec": 42.25,
+      "sim_time": "T+00:00:42",
+      "sim_tick": 169,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00005 进入 Robot C",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 52,
+      "sim_time_sec": 44.25,
+      "sim_time": "T+00:00:44",
+      "sim_tick": 177,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00012",
+      "item_id": "pt_1-00012"
+    },
+    {
+      "seq": 53,
+      "sim_time_sec": 46.25,
+      "sim_time": "T+00:00:46",
+      "sim_tick": 185,
+      "event_type": "STARVED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Robot C 缺料等待"
+    },
+    {
+      "seq": 54,
+      "sim_time_sec": 46.25,
+      "sim_time": "T+00:00:46",
+      "sim_tick": 185,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_5",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00005 进入 Conveyor D",
+      "item_id": "pt_1-00005"
+    },
+    {
+      "seq": 55,
+      "sim_time_sec": 46.25,
+      "sim_time": "T+00:00:46",
+      "sim_tick": 185,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 进入 Despawner",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 56,
+      "sim_time_sec": 46.5,
+      "sim_time": "T+00:00:46",
+      "sim_tick": 186,
+      "event_type": "DESPAWNED",
+      "source_id": "pt_6",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00004 到达出口 Despawner",
+      "item_id": "pt_1-00004"
+    },
+    {
+      "seq": 57,
+      "sim_time_sec": 48.25,
+      "sim_time": "T+00:00:48",
+      "sim_tick": 193,
+      "event_type": "SPAWNED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Spawner 生成物料 00013",
+      "item_id": "pt_1-00013"
+    },
+    {
+      "seq": 58,
+      "sim_time_sec": 48.25,
+      "sim_time": "T+00:00:48",
+      "sim_tick": 193,
+      "event_type": "BLOCKED",
+      "source_id": "pt_1",
+      "source_type": "scene_device",
+      "severity": "WARN",
+      "message": "Spawner 下游容量已满，物料等待",
+      "item_id": "pt_1-00013"
+    },
+    {
+      "seq": 59,
+      "sim_time_sec": 48.25,
+      "sim_time": "T+00:00:48",
+      "sim_tick": 193,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_2",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00007 进入 Conveyor A",
+      "item_id": "pt_1-00007"
+    },
+    {
+      "seq": 60,
+      "sim_time_sec": 48.25,
+      "sim_time": "T+00:00:48",
+      "sim_tick": 193,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00006 进入 Inspection B",
+      "item_id": "pt_1-00006"
+    },
+    {
+      "seq": 61,
+      "sim_time_sec": 50.25,
+      "sim_time": "T+00:00:50",
+      "sim_tick": 201,
+      "event_type": "INSPECTION_PASS",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00006 通过 Inspection B 检测",
+      "item_id": "pt_1-00006"
+    },
+    {
+      "seq": 62,
+      "sim_time_sec": 50.25,
+      "sim_time": "T+00:00:50",
+      "sim_tick": 201,
+      "event_type": "STARVED",
+      "source_id": "pt_3",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "Inspection B 缺料等待"
+    },
+    {
+      "seq": 63,
+      "sim_time_sec": 50.25,
+      "sim_time": "T+00:00:50",
+      "sim_tick": 201,
+      "event_type": "TASK_STARTED",
+      "source_id": "pt_4",
+      "source_type": "scene_device",
+      "severity": "INFO",
+      "message": "pt_1-00006 进入 Robot C",
+      "item_id": "pt_1-00006"
+    }
+  ],
+  "event_stats": {
+    "total": 63,
+    "failures": 0,
+    "inspection_events": 6,
+    "blocked_events": 1,
+    "starved_events": 11
+  },
+  "snapshot": {
+    "sim_id": "VID-SIM-20261109-171714-25E8",
+    "scene_id": "SCN-20261030-234230-6C86",
+    "scene_version": 8,
+    "state": {
+      "devices": [
+        {
+          "device_id": "pt_1",
+          "name": "Spawner",
+          "type": "spawner",
+          "simulation_type": "spawner",
+          "state": "idle",
+          "state_since": 48.5,
+          "utilization": 0.0,
+          "busy_sec": 0.0,
+          "blocked_sec": 0.0,
+          "starved_sec": 0.0,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 0,
+          "occupancy": 0,
+          "capacity": 1,
+          "cycle_sec": 4.0,
+          "processed": 13,
+          "good": 0,
+          "defect": 0,
+          "done": 0,
+          "power_kw": 0.3,
+          "energy_kwh": 0.0004,
+          "last_update": "2026-11-09T17:17:39"
+        },
+        {
+          "device_id": "pt_2",
+          "name": "Conveyor A",
+          "type": "conveyor",
+          "simulation_type": "conveyor",
+          "state": "running",
+          "state_since": 0.25,
+          "utilization": 0.9653,
+          "busy_sec": 48.75,
+          "blocked_sec": 0.0,
+          "starved_sec": 0.0,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 6,
+          "occupancy": 7,
+          "capacity": 7,
+          "cycle_sec": 8.0,
+          "processed": 6,
+          "good": 0,
+          "defect": 0,
+          "done": 0,
+          "power_kw": 0.6,
+          "energy_kwh": 0.0082,
+          "last_update": "2026-11-09T17:17:39"
+        },
+        {
+          "device_id": "pt_3",
+          "name": "Inspection B",
+          "type": "inspection",
+          "simulation_type": "inspection",
+          "state": "idle",
+          "state_since": 50.25,
+          "utilization": 0.2079,
+          "busy_sec": 10.5,
+          "blocked_sec": 0.0,
+          "starved_sec": 38.5,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 0,
+          "occupancy": 0,
+          "capacity": 1,
+          "cycle_sec": 2.0,
+          "processed": 6,
+          "good": 6,
+          "defect": 0,
+          "done": 0,
+          "power_kw": 0.8,
+          "energy_kwh": 0.0032,
+          "last_update": "2026-11-09T17:17:39"
+        },
+        {
+          "device_id": "pt_4",
+          "name": "Robot C",
+          "type": "robot",
+          "simulation_type": "robot",
+          "state": "processing",
+          "state_since": 50.25,
+          "utilization": 0.3762,
+          "busy_sec": 19.0,
+          "blocked_sec": 0.0,
+          "starved_sec": 30.0,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 0,
+          "occupancy": 1,
+          "capacity": 1,
+          "cycle_sec": 4.0,
+          "processed": 5,
+          "good": 0,
+          "defect": 0,
+          "done": 0,
+          "power_kw": 2.5,
+          "energy_kwh": 0.0154,
+          "last_update": "2026-11-09T17:17:39"
+        },
+        {
+          "device_id": "pt_5",
+          "name": "Conveyor D",
+          "type": "conveyor",
+          "simulation_type": "conveyor",
+          "state": "running",
+          "state_since": 14.25,
+          "utilization": 0.698,
+          "busy_sec": 35.25,
+          "blocked_sec": 0.0,
+          "starved_sec": 14.0,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 0,
+          "occupancy": 1,
+          "capacity": 7,
+          "cycle_sec": 8.0,
+          "processed": 4,
+          "good": 0,
+          "defect": 0,
+          "done": 0,
+          "power_kw": 0.6,
+          "energy_kwh": 0.0061,
+          "last_update": "2026-11-09T17:17:39"
+        },
+        {
+          "device_id": "pt_6",
+          "name": "Despawner",
+          "type": "despawner",
+          "simulation_type": "despawner",
+          "state": "idle",
+          "state_since": 46.5,
+          "utilization": 0.0,
+          "busy_sec": 0.0,
+          "blocked_sec": 0.0,
+          "starved_sec": 49.5,
+          "failed_sec": 0.0,
+          "failure_count": 0,
+          "queue": 0,
+          "occupancy": 0,
+          "capacity": 100000,
+          "cycle_sec": 0.05,
+          "processed": 4,
+          "good": 0,
+          "defect": 0,
+          "done": 4,
+          "power_kw": 0.1,
+          "energy_kwh": 0.0001,
+          "last_update": "2026-11-09T17:17:39"
+        }
+      ]
+    }
+  },
+  "assumptions": [
+    "全部指标由本次 Python 离散事件仿真实际计算，属于软件仿真结果，不是真实工厂实测。",
+    "设备节拍、故障率、维修时间、能耗为可编辑的仿真假设参数。",
+    "conveyor 按单服务台 + 有限队列建模，节拍 = 长度 / 速度；不是 Jolt 连续物理。",
+    "相同场景、相同 seed、相同仿真时长会得到相同结果。"
+  ],
+  "wall_time_ms": 25334.0,
+  "live": true
+}

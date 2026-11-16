@@ -1,0 +1,31 @@
+# Render Blueprint：单容器部署（Streamlit + RFTwin + nginx）
+# 使用前请把仓库推到 GitHub/GitLab，然后在 Render 选择 "Blueprint" 连接仓库。
+services:
+  - type: web
+    name: aic-factory-studio
+    runtime: docker
+    plan: free                 # 免费实例 512MB，可能不足以同时跑三维引擎；建议改 starter
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: BASIC_AUTH_USER
+        value: admin
+      - key: BASIC_AUTH_PASSWORD
+        sync: false            # 在 Render 控制台填写，不要把密码写进仓库
+      - key: AIC_DATA_DIR
+        value: /tmp/aic-data  # 免费实例无持久磁盘；升级 starter 后建议改 /var/data 并挂载磁盘
+      - key: TWIN_PUBLIC_BASE
+        value: /twin
+      - key: TWIN_INTERNAL_PORT
+        value: "8020"
+      - key: TWIN_XFF
+        value: first
+      - key: STREAMLIT_SERVER_ENABLE_CORS
+        value: "false"
+    # 数据持久化（需要 paid plan）：
+    # disk:
+    #   name: aic-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

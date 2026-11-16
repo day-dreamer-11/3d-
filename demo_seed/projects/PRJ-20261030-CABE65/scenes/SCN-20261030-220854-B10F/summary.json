@@ -1,0 +1,13 @@
+{
+  "scene_id": "SCN-20261030-220854-B10F",
+  "project_id": "PRJ-20261030-CABE65",
+  "name": "最小六设备产线",
+  "version": 10,
+  "devices": 12,
+  "connections": 5,
+  "updated_at": "2026-10-31T22:21:01",
+  "errors": 0,
+  "warnings": 0,
+  "has_oip": true,
+  "content_hash": "b9e67a1f2ff4cde9554b"
+}

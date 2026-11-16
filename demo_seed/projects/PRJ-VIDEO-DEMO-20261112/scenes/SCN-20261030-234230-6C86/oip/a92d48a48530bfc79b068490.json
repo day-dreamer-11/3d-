@@ -1,0 +1,2580 @@
+{
+  "version": 7,
+  "name": "六设备产线（可动画演示）",
+  "scene": {
+    "version": 4,
+    "parts": [
+      {
+        "id": "pt_1",
+        "type": "part",
+        "packageId": "oip.box-spawner",
+        "name": "Spawner",
+        "position": [
+          -6.5,
+          2.5,
+          0
+        ],
+        "rotationY": 0,
+        "params": {
+          "boxesPerMinute": 15,
+          "product": "oip.box",
+          "fixedRate": true
+        }
+      },
+      {
+        "id": "pt_2",
+        "type": "part",
+        "packageId": "oip.roller-conveyor",
+        "name": "Conveyor A",
+        "position": [
+          -4.5,
+          2,
+          0
+        ],
+        "rotationY": 0,
+        "params": {
+          "length": 4,
+          "width": 1.524,
+          "speed": 0.5,
+          "fpmUnits": false
+        }
+      },
+      {
+        "id": "pt_3",
+        "type": "part",
+        "packageId": "oip.color-sensor",
+        "name": "Inspection B",
+        "position": [
+          -2.2,
+          1.98,
+          0.8190000000000001
+        ],
+        "rotationY": 3.141592653589793,
+        "params": {
+          "maxRange": 1.564
+        }
+      },
+      {
+        "id": "pt_4",
+        "type": "part",
+        "packageId": "oip.six-axis-robot",
+        "name": "Robot C",
+        "position": [
+          -1.2,
+          2,
+          1.4
+        ],
+        "rotationY": -0.008475803666156526,
+        "params": {
+          "scale": 1,
+          "speed": 120
+        },
+        "rotationX": 0.0765674986880672,
+        "rotationZ": 0.02003806942067119
+      },
+      {
+        "id": "pt_5",
+        "type": "part",
+        "packageId": "oip.roller-conveyor",
+        "name": "Conveyor D",
+        "position": [
+          -0.5,
+          2,
+          0
+        ],
+        "rotationY": 0,
+        "params": {
+          "length": 4,
+          "width": 1.524,
+          "speed": 0.5,
+          "fpmUnits": false
+        }
+      },
+      {
+        "id": "pt_6",
+        "type": "part",
+        "packageId": "oip.despawner",
+        "name": "Despawner",
+        "position": [
+          1.7,
+          2,
+          0
+        ],
+        "rotationY": 0,
+        "params": {}
+      }
+    ]
+  },
+  "packages": [
+    {
+      "format": 6,
+      "id": "oip.box-spawner",
+      "name": "Spawner",
+      "params": {
+        "boxesPerMinute": {
+          "type": "number",
+          "unit": "/min",
+          "default": 45,
+          "min": 0,
+          "max": 1000,
+          "step": 1,
+          "label": "Feed rate",
+          "desc": "Items per minute. 0 halts the feed without pausing the part, so the timer restarts cleanly when you raise it again."
+        },
+        "fixedRate": {
+          "type": "boolean",
+          "default": true,
+          "label": "Fixed rate (off = ±50% jitter)",
+          "desc": "On, items arrive on an exact metronome. Off, each gap is randomised between half and one-and-a-half times the nominal period, which is what an untidy real feed looks like downstream."
+        },
+        "product": {
+          "type": "string",
+          "product": true,
+          "settings": "productSettings",
+          "default": "oip.box",
+          "label": "Product",
+          "desc": "The cargo part every item is, from the parts in the project: dropped as if placed, with its own size, colour, mass and product attributes. Its settings show below it. A Box takes the size, colour and mass under Box instead."
+        },
+        "productSettings": {
+          "type": "string",
+          "hidden": true,
+          "default": "",
+          "label": "Product settings",
+          "desc": "Settings of the chosen product, as JSON. Edited under Product."
+        },
+        "boxColor": {
+          "type": "color",
+          "default": "#ffffff",
+          "label": "Box color",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Tint for every spawned box. Ignored once the cycle list below is non-empty."
+        },
+        "boxColors": {
+          "type": "color",
+          "list": true,
+          "default": "",
+          "label": "Colors (cycle)",
+          "desc": "Colors handed out one per item, in order, overriding the colour of the product (or the Box color). Useful for telling sorted lanes apart at a glance. Leave empty to use the single colour."
+        },
+        "mixAttribute": {
+          "type": "string",
+          "default": "",
+          "label": "Vary attribute",
+          "desc": "A product attribute each item starts with, from the values below: a label code, a destination. A scanner reads it, and a program routes by it. Empty for none."
+        },
+        "mixValues": {
+          "type": "string",
+          "default": "",
+          "label": "Values (cycle)",
+          "desc": "The values handed out one per item, comma-separated, in order: \"1, 2, 2, 3\". Numbers stay numbers, true and false are booleans, anything else is text. They advance with the colour cycle, so item n takes value n and colour n."
+        },
+        "randomColors": {
+          "type": "boolean",
+          "default": false,
+          "label": "Random order",
+          "desc": "Give each item a colour and a value drawn at random from the cycle lists instead of walking them in order."
+        },
+        "length": {
+          "type": "number",
+          "default": 0.6,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Box length (m)",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Extent along local X of each spawned box. Ignored while Random size is on."
+        },
+        "width": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Box width (m)",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Extent along local Z of each spawned box. Ignored while Random size is on."
+        },
+        "height": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Box height (m)",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Extent along local Y of each spawned box. Ignored while Random size is on."
+        },
+        "randomSize": {
+          "type": "boolean",
+          "default": false,
+          "label": "Random size",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Give each box a random size and IGNORE the three dimensions above. The random range is fixed by the part (0.4-0.8 long, 0.3-0.5 high, 0.3-0.5 wide), not derived from them."
+        },
+        "mass": {
+          "type": "number",
+          "default": 10,
+          "min": 0.5,
+          "max": 100,
+          "step": 0.5,
+          "label": "Mass (kg)",
+          "group": "Box",
+          "visibleWhen": {
+            "param": "product",
+            "is": "oip.box"
+          },
+          "desc": "Mass given to every spawned box, whatever its size."
+        },
+        "disable": {
+          "type": "boolean",
+          "default": false,
+          "label": "Paused",
+          "desc": "Stop spawning entirely. Use (C, or E while walking) is a separate hand stop: it pauses and resumes the feed during a run without changing this setting, and is cleared when the run stops."
+        },
+        "release": {
+          "type": "enum",
+          "default": "interval",
+          "label": "Release",
+          "options": [
+            {
+              "value": "interval",
+              "label": "Steady interval"
+            },
+            {
+              "value": "enable",
+              "label": "On each enable"
+            }
+          ],
+          "desc": "What reopening the gate (Paused, Use, the conveyor interlock, the run tag) does. Steady interval: items come at the feed rate and the gap since the last one is always kept, so a short pulse may drop nothing. On each enable: an item drops the moment the gate opens, then more at the feed rate while it stays open, so each pulse of the run tag dispenses one."
+        },
+        "keepSpacing": {
+          "type": "boolean",
+          "default": false,
+          "visibleWhen": {
+            "param": "release",
+            "is": "interval"
+          },
+          "label": "Keep spacing while held",
+          "desc": "Hold the interval while the feed is held instead of letting it run down, so boxes dropped onto a conveyor that stops with this spawner (give both the same run tag) stay one pitch apart however often the pair stops."
+        },
+        "conveyorId": {
+          "type": "partRef",
+          "default": "",
+          "label": "Pause when conveyor stopped",
+          "desc": "Interlock: while the named conveyor is stopped, this spawner holds. Wire that conveyor to the PLC and the feed gates itself, with no tag of its own."
+        },
+        "runTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "onlyWhenDriven": true,
+          "default": "",
+          "label": "Run tag (spawn only while true)",
+          "group": "Comms",
+          "desc": "Gate the feed from the program. Note this only takes over once a program actually DRIVES the tag - until then the spawner keeps running, so a merely-declared tag is not a stopped feed."
+        },
+        "countTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "DINT",
+          "default": "",
+          "label": "Spawned count tag",
+          "group": "Comms",
+          "desc": "Running total of boxes this spawner has dispensed. Subtract the despawner counts to get the work in progress."
+        }
+      },
+      "behavior": "// Spawner — a hopper that emits a product: boxes by default, or any cargo part in the project. Demonstrates ctx.spawn\n// by product: the behavior runs its own rate timer and emits an item every 60/boxesPerMinute seconds via\n// ctx.spawn({ part, params }); the host creates that part's body at the part's pose + the given local offset, as if\n// placed. A Box takes this part's own size, colour and mass settings (the part's id is still oip.box-spawner). Cargo\n// drops at the exact spawn point (no positional scatter), so downstream handling (picks, aligned queues) sees a\n// repeatable pose. A pilot \"Use\" toggles the feed (a runtime latch, so it resets on stop/reload). Optionally gated by\n// a conveyor interlock (conveyorId → ctx.conveyorRunning) or a PLC run tag.\n//\n// A mixed stream: `mixAttribute` names a product attribute and `mixValues` the values handed out one per item, in\n// order (or at random with Random order). They start as the item's marks (ctx.spawn `marks`), the way a label printed\n// upstream does, so a scanner reads them and a program routes by them. The value list and the colour list advance\n// together: item n takes value n and colour n, so a code can be seen by its colour.\n//\n// Release says what reopening the gate does.\n// - Steady interval: a hopper, PACED. What the author sets is the INTERVAL BETWEEN items, so that is what a hold\n//   preserves. The countdown keeps running while the gate is shut but floors at zero: a hold neither costs a period\n//   nor banks one. Freeze it instead and every release pays out the remainder of an interval the hopper spent\n//   standing still (in the PLC demo: ~2.7 s of empty lane at the top of every row); let it run unfloored and a long\n//   hold banks a burst that all lands in one tick.\n// - On each enable: a magazine, COMMANDED. Every enable re-arms it and it drops at once, then paces while the gate\n//   stays open. That is what makes a command pulse shorter than one period dispense exactly one item, every time.\n//   Carry the countdown across the hold instead and only the first pulse ever dispenses.\n\n// random-size range, full box dimensions (m)\nconst SIZE_MIN = [0.4, 0.3, 0.3]\nconst SIZE_MAX = [0.8, 0.5, 0.5]\n\nlet countdown = 0 // seconds until the next spawn\nlet started = false // steady interval: arm the first item on the first eligible tick\nlet armed = false // on each enable: drop on the first eligible tick after every enable, not a period later\nlet colorIndex = 0\nlet usedOff = false\nlet spawned = 0\n\n// Publish what this feed has dispensed, every tick (a display not republished goes blank): the infeed half\n// of the line's numbers, which a despawner's count is the other half of - the two differ by the work in\n// progress. It counts REQUESTS: past the physics engine's 10,240-body table a spawn is skipped, uncounted\n// by the host but still counted here.\nfunction publish(ctx) {\n  ctx.display('spawned', spawned)\n  if (ctx.params.countTag) ctx.writeNumber(ctx.params.countTag, spawned)\n}\n\n// parse \"#rrggbb\" → [r, g, b] in 0..1\nfunction hexRgb(hex) {\n  const h = (hex || '').replace('#', '')\n  if (h.length < 6) return [1, 1, 1]\n  const v = (i) => { const n = parseInt(h.slice(i, i + 2), 16); return Number.isFinite(n) ? n / 255 : 1 }\n  return [v(0), v(2), v(4)]\n}\n// the product settings param's JSON object (`{\"size\":\"400x300x220\"}`), or {} when it is empty or malformed\nfunction settingsOf(json) {\n  try {\n    const o = JSON.parse(json || '{}')\n    return o && typeof o === 'object' && !Array.isArray(o) ? o : {}\n  } catch {\n    return {}\n  }\n}\n// parse a comma-separated hex list → [[r,g,b], …]\nfunction palette(csv) {\n  return (csv || '').split(',').map((c) => c.trim()).filter((c) => c.length >= 6).map(hexRgb)\n}\n// parse a comma-separated value list: numbers as numbers, true / false as booleans, anything else as text\nfunction valueList(csv) {\n  return (csv || '').split(',').map((c) => c.trim()).filter((c) => c !== '').map((c) => {\n    if (c === 'true' || c === 'false') return c === 'true'\n    const n = Number(c)\n    return Number.isFinite(n) ? n : c\n  })\n}\n\ndefinePart({\n  interactive: true, // a pilot \"Use\" toggles the feed\n  params: {\n    boxesPerMinute: { type: 'number', unit: '/min', default: 45, min: 0, max: 1000, step: 1, label: 'Feed rate', desc: 'Items per minute. 0 halts the feed without pausing the part, so the timer restarts cleanly when you raise it again.' },\n    fixedRate: { type: 'boolean', default: true, label: 'Fixed rate (off = ±50% jitter)', desc: 'On, items arrive on an exact metronome. Off, each gap is randomised between half and one-and-a-half times the nominal period, which is what an untidy real feed looks like downstream.' },\n    product: { type: 'string', product: true, settings: 'productSettings', default: 'oip.box', label: 'Product', desc: 'The cargo part every item is, from the parts in the project: dropped as if placed, with its own size, colour, mass and product attributes. Its settings show below it. A Box takes the size, colour and mass under Box instead.' },\n    productSettings: { type: 'string', hidden: true, default: '', label: 'Product settings', desc: 'Settings of the chosen product, as JSON. Edited under Product.' },\n    boxColor: { type: 'color', default: '#ffffff', label: 'Box color', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Tint for every spawned box. Ignored once the cycle list below is non-empty.' },\n    boxColors: { type: 'color', list: true, default: '', label: 'Colors (cycle)', desc: 'Colors handed out one per item, in order, overriding the colour of the product (or the Box color). Useful for telling sorted lanes apart at a glance. Leave empty to use the single colour.' },\n    mixAttribute: { type: 'string', default: '', label: 'Vary attribute', desc: 'A product attribute each item starts with, from the values below: a label code, a destination. A scanner reads it, and a program routes by it. Empty for none.' },\n    mixValues: { type: 'string', default: '', label: 'Values (cycle)', desc: 'The values handed out one per item, comma-separated, in order: \"1, 2, 2, 3\". Numbers stay numbers, true and false are booleans, anything else is text. They advance with the colour cycle, so item n takes value n and colour n.' },\n    randomColors: { type: 'boolean', default: false, label: 'Random order', desc: 'Give each item a colour and a value drawn at random from the cycle lists instead of walking them in order.' },\n    length: { type: 'number', default: 0.6, min: 0.1, step: 0.05, label: 'Box length (m)', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Extent along local X of each spawned box. Ignored while Random size is on.' },\n    width: { type: 'number', default: 0.4, min: 0.1, step: 0.05, label: 'Box width (m)', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Extent along local Z of each spawned box. Ignored while Random size is on.' },\n    height: { type: 'number', default: 0.4, min: 0.1, step: 0.05, label: 'Box height (m)', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Extent along local Y of each spawned box. Ignored while Random size is on.' },\n    randomSize: { type: 'boolean', default: false, label: 'Random size', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Give each box a random size and IGNORE the three dimensions above. The random range is fixed by the part (0.4-0.8 long, 0.3-0.5 high, 0.3-0.5 wide), not derived from them.' },\n    mass: { type: 'number', default: 10, min: 0.5, max: 100, step: 0.5, label: 'Mass (kg)', group: 'Box', visibleWhen: { param: 'product', is: 'oip.box' }, desc: 'Mass given to every spawned box, whatever its size.' },\n    disable: { type: 'boolean', default: false, label: 'Paused', desc: 'Stop spawning entirely. Use (C, or E while walking) is a separate hand stop: it pauses and resumes the feed during a run without changing this setting, and is cleared when the run stops.' },\n    release: {\n      type: 'enum', default: 'interval', label: 'Release',\n      options: [{ value: 'interval', label: 'Steady interval' }, { value: 'enable', label: 'On each enable' }],\n      desc: 'What reopening the gate (Paused, Use, the conveyor interlock, the run tag) does. Steady interval: items come at the feed rate and the gap since the last one is always kept, so a short pulse may drop nothing. On each enable: an item drops the moment the gate opens, then more at the feed rate while it stays open, so each pulse of the run tag dispenses one.',\n    },\n    keepSpacing: { type: 'boolean', default: false, visibleWhen: { param: 'release', is: 'interval' }, label: 'Keep spacing while held', desc: 'Hold the interval while the feed is held instead of letting it run down, so boxes dropped onto a conveyor that stops with this spawner (give both the same run tag) stay one pitch apart however often the pair stops.' },\n    conveyorId: { type: 'partRef', default: '', label: 'Pause when conveyor stopped', desc: 'Interlock: while the named conveyor is stopped, this spawner holds. Wire that conveyor to the PLC and the feed gates itself, with no tag of its own.' },\n    runTag: { type: 'tag', dir: 'in', stType: 'BOOL', onlyWhenDriven: true, default: '', label: 'Run tag (spawn only while true)', group: 'Comms', desc: 'Gate the feed from the program. Note this only takes over once a program actually DRIVES the tag - until then the spawner keeps running, so a merely-declared tag is not a stopped feed.' },\n    countTag: { type: 'tag', dir: 'out', stType: 'DINT', default: '', label: 'Spawned count tag', group: 'Comms', desc: 'Running total of boxes this spawner has dispensed. Subtract the despawner counts to get the work in progress.' },\n  },\n  step(ctx) {\n    const p = ctx.params\n    if (ctx.used()) usedOff = !usedOff\n    // hold while a linked conveyor is stopped, or while a controller DRIVES the run tag de-energized\n    // (ctx.tagDriven = output ownership; gating on the tag NAME alone would stop the spawner the moment one\n    // was typed).\n    const stopped = !ctx.conveyorRunning(p.conveyorId) || (ctx.tagDriven(p.runTag) && !ctx.readTag(p.runTag))\n    const onEnable = p.release === 'enable'\n    if (p.disable || usedOff || stopped || p.boxesPerMinute <= 0) {\n      // on each enable: held off = disarmed, so the next open is a fresh command\n      if (onEnable) armed = false\n      // steady interval: the interval runs on, floored at zero (see the note at the top). Floored is what makes this\n      // safe for an interlock that STUTTERS: at most one item is ever due when the gate reopens, never a burst.\n      // Keep spacing: a feed onto a conveyor that stops WITH it (the same gate) must not run its interval down, or\n      // the first item after a hold lands on the one the stopped belt is still holding under the drop\n      else if (!p.keepSpacing) countdown = Math.max(0, countdown - ctx.dt)\n      publish(ctx)\n      return\n    }\n    const period = 60 / p.boxesPerMinute\n    // the first item drops on the first eligible tick, not after a full period: once per run for a steady interval,\n    // after every enable for on each enable\n    if (onEnable) {\n      if (!armed) { armed = true; countdown = 0 }\n    } else if (!started) { started = true; countdown = 0 }\n    countdown -= ctx.dt\n    const pal = palette(p.boxColors)\n    const values = p.mixAttribute ? valueList(p.mixValues) : []\n    let n = 0\n    while (countdown <= 0 && n < 8) {\n      countdown += p.fixedRate ? period : Math.max(ctx.dt, period * (0.5 + ctx.rng()))\n      n++\n      // one step or one draw per item for both lists, so item n takes colour n and value n (a stream with no values\n      // draws exactly as it did before values existed)\n      let ci = 0\n      let vi = 0\n      if (pal.length > 0 || values.length > 0) {\n        if (p.randomColors) {\n          const r = ctx.rng()\n          ci = Math.floor(r * pal.length)\n          vi = Math.floor(r * values.length)\n        } else {\n          ci = colorIndex % Math.max(1, pal.length)\n          vi = colorIndex % Math.max(1, values.length)\n          colorIndex++\n        }\n      }\n      const color = pal.length > 0 ? pal[ci] : p.product === 'oip.box' ? hexRgb(p.boxColor) : undefined\n      const marks = values.length > 0 ? { [p.mixAttribute]: values[vi] } : undefined\n      if (p.product === 'oip.box') {\n        const rnd = (i) => SIZE_MIN[i] + ctx.rng() * (SIZE_MAX[i] - SIZE_MIN[i])\n        const size = p.randomSize ? [rnd(0), rnd(1), rnd(2)] : [p.length, p.height, p.width]\n        ctx.spawn({ part: 'oip.box', params: { length: size[0], height: size[1], width: size[2] }, color: color, mass: p.mass, offset: [0, -0.2, 0], ...(marks ? { marks } : {}) })\n      } else if (p.product) {\n        // any other product drops as itself, with its settings from the Inspector; a colour only from the cycle list\n        ctx.spawn({ part: p.product, params: settingsOf(p.productSettings), ...(color ? { color } : {}), offset: [0, -0.2, 0], ...(marks ? { marks } : {}) })\n      } else {\n        continue // no product: the feed paces on and drops nothing\n      }\n      spawned++\n    }\n    publish(ctx)\n  },\n})\n",
+      "geometry": {
+        "kind": "rig",
+        "links": [
+          {
+            "name": "marker",
+            "shape": {
+              "kind": "box",
+              "size": [
+                0.5,
+                0.5,
+                0.5
+              ]
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "color": [
+              0.2122,
+              0.4564,
+              0.6939
+            ],
+            "opacity": 0.3,
+            "outline": [
+              0.3467,
+              0.6445,
+              0.8714
+            ],
+            "collision": "none"
+          },
+          {
+            "name": "dropCone",
+            "shape": {
+              "kind": "cone",
+              "radius": 0.07,
+              "height": 0.16
+            },
+            "offset": [
+              0,
+              -0.38,
+              0
+            ],
+            "rotation": [
+              3.141592653589793,
+              0,
+              0
+            ],
+            "color": [
+              0.3467,
+              0.6445,
+              0.8714
+            ],
+            "opacity": 0.8
+          }
+        ],
+        "joints": [],
+        "bounds": {
+          "length": 0.5,
+          "width": 0.5,
+          "top": 0.5,
+          "bottom": -0.46
+        }
+      },
+      "category": "Products",
+      "interactive": true,
+      "materials": [],
+      "sdk": {
+        "level": 12,
+        "of": "v2:13856:2ebmv63il9h"
+      },
+      "origin": {
+        "app": "v2:13856:2ebmv63il9h"
+      }
+    },
+    {
+      "format": 6,
+      "id": "oip.roller-conveyor",
+      "name": "Roller Conveyor",
+      "params": {
+        "length": {
+          "type": "number",
+          "default": 4,
+          "min": 0.5,
+          "step": 0.1,
+          "label": "Length (m)",
+          "handle": {
+            "kind": "face",
+            "axis": "x"
+          },
+          "group": "Size",
+          "desc": "Bed length along travel. Drag the dot on either end face to resize in the viewport; there is no upper limit, so one bed can stand in for a long run."
+        },
+        "width": {
+          "type": "number",
+          "default": 1.524,
+          "min": 0.2,
+          "step": 0.05,
+          "label": "Width (m)",
+          "handle": {
+            "kind": "face",
+            "axis": "z"
+          },
+          "group": "Size",
+          "desc": "Bed width across travel. Drag the dot on either side face to resize in the viewport."
+        },
+        "frameHeight": {
+          "type": "number",
+          "default": 0.17,
+          "min": 0.1,
+          "max": 0.6,
+          "step": 0.01,
+          "label": "Frame height (m)",
+          "group": "Size",
+          "desc": "Depth of the side frame channel below the rollers. Set it to the Frame height of the conveyor this bed butts against so the two frames line up at the joint. The legs shorten or lengthen to meet the frame bottom; the deck height does not move."
+        },
+        "fpmUnits": {
+          "type": "boolean",
+          "default": true,
+          "whenAbsent": false,
+          "imperialUnits": true,
+          "label": "PLC speed in FPM",
+          "desc": "The unit the PLC commands this conveyor in. On: feet per minute. Off: metres per second. The speed tag is a REAL either way, so switching changes what its value means and never how the program declares it. Set by the scene Units (Scene Properties), which switch every conveyor together, so the Inspector does not show it. A conveyor saved before this switch existed is in metres per second."
+        },
+        "speedFpm": {
+          "type": "number",
+          "default": 197,
+          "min": -600,
+          "max": 600,
+          "step": 1,
+          "unit": "FPM",
+          "label": "Speed",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": true
+          },
+          "desc": "Surface speed in feet per minute. Negative runs it backwards. A program can command this through the FPM speed tag below."
+        },
+        "speed": {
+          "type": "number",
+          "unit": "m/s",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": false
+          },
+          "default": 1,
+          "min": -3,
+          "max": 3,
+          "step": 0.1,
+          "label": "Speed",
+          "desc": "Surface speed carried along the bed. Negative runs the rollers backwards, which is the ONLY way to reverse flow - rotating the part 180 degrees moves its ends instead. A program can command this through the speed tag below."
+        },
+        "accelTime": {
+          "type": "number",
+          "unit": "s",
+          "default": 0.2,
+          "min": 0,
+          "max": 30,
+          "step": 0.1,
+          "label": "Accel time",
+          "desc": "How long the drive takes to bring the conveyor from stopped up to its rated speed (the speed that reads 30, under Comms > Feedback), like the acceleration time set on a VFD. A smaller change takes proportionally less. 0 starts instantly."
+        },
+        "decelTime": {
+          "type": "number",
+          "unit": "s",
+          "default": 0.2,
+          "min": 0,
+          "max": 30,
+          "step": 0.1,
+          "label": "Decel time",
+          "desc": "How long the drive takes to bring the conveyor from rated speed down to a stop. Cargo keeps travelling while it does, so a box stopped at a photo-eye ends up past it. 0 stops instantly."
+        },
+        "friction": {
+          "type": "number",
+          "default": 0.42,
+          "min": 0,
+          "step": 0.01,
+          "label": "Friction",
+          "desc": "Grip between the running surface and a standard carton, the figure a belt datasheet quotes. A smooth PVC belt is about 0.4, a rough-top incline belt about 0.9 and a low-friction plastic modular belt about 0.2, made for product to slide while it accumulates. Bare steel rollers are about 0.4. Other cargo grips by its own friction against the same surface."
+        },
+        "skew": {
+          "type": "number",
+          "unit": "°",
+          "default": 0,
+          "min": -60,
+          "max": 60,
+          "step": 1,
+          "label": "Roller skew",
+          "desc": "Angle the rollers so cargo drifts sideways as it travels and squares itself against a side guard - the standard way to align product before a merge or a labeller. The surface velocity follows the angle, and the guard does the squaring, so leave the guard on that side up."
+        },
+        "tiltDeg": {
+          "type": "number",
+          "unit": "°",
+          "default": 0,
+          "min": -30,
+          "max": 30,
+          "step": 1,
+          "label": "Incline",
+          "desc": "Tilt the bed about its centre, positive lifting the head. Incline a roller bed this way, not by rotating the part, which tips its snap ends too; the legs regrow to the floor. Capped at 30 degrees: rollers shed product on a steeper grade, where a belt holds it."
+        },
+        "leftGuard": {
+          "type": "boolean",
+          "default": true,
+          "label": "Left guard",
+          "group": "Guards",
+          "desc": "Guard wall down the left side, looking along travel. This is a real barrier, so turning it off lets cargo leave the bed sideways."
+        },
+        "rightGuard": {
+          "type": "boolean",
+          "default": true,
+          "label": "Right guard",
+          "group": "Guards",
+          "desc": "Guard wall down the right side, looking along travel. This is a real barrier, so turning it off lets cargo leave the bed sideways."
+        },
+        "guardOpenings": {
+          "type": "numberList",
+          "columns": [
+            "start m",
+            "end m",
+            "side ±1/0"
+          ],
+          "arity": 3,
+          "default": [],
+          "label": "Guard openings",
+          "group": "Guards",
+          "desc": "Gaps cut in the guard wall, measured as distance ALONG the bed from the tail. Side -1 is left, +1 is right, 0 cuts both. Each gap opens the collision as well as the mesh, which is how a transfer or a diverter gets product off the lane. Press G with the bed selected to drag them in the viewport."
+        },
+        "standHeight": {
+          "type": "number",
+          "default": 2,
+          "min": 0.1,
+          "max": 3,
+          "step": 0.01,
+          "rest": "surfaceBelow",
+          "label": "Stand height (m)",
+          "desc": "Height of the deck above whatever is beneath it, which sets the leg length. The host fills this in when you drop or snap the conveyor, so the legs reach the floor - or a platform crossing underneath - without you measuring. Pin it by hand when you want a deliberate height."
+        },
+        "speedTag": {
+          "type": "tag",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": false
+          },
+          "dir": "in",
+          "stType": "REAL",
+          "setpointFor": "speed",
+          "default": "",
+          "label": "Speed tag",
+          "group": "Comms",
+          "desc": "The program commands surface speed here, replacing the Speed field above, which then shows the live value read-only. Careful: once BOUND this takes over even if no program drives it, and an undriven tag reads 0 - so a half-wired conveyor sits still rather than running at its authored speed."
+        },
+        "speedFpmTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "REAL",
+          "setpointFor": "speedFpm",
+          "default": "",
+          "label": "Speed tag",
+          "group": "Comms",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": true
+          },
+          "desc": "The program commands surface speed here in feet per minute, replacing the Speed field above, which then shows the live value read-only. Once BOUND this takes over even if no program writes it, so an unwritten tag holds the conveyor at 0."
+        },
+        "runTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "onlyWhenDriven": true,
+          "default": "",
+          "label": "Run tag (rollers run while true)",
+          "group": "Comms",
+          "desc": "Start/stop gate: false forces the speed to 0 whatever the setpoint says. Unlike the speed tag, this only takes effect once a program actually DRIVES it, so binding it alone will not stop the bed."
+        },
+        "runningTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Running tag (true while moving)",
+          "group": "Comms",
+          "desc": "Feedback the conveyor publishes for the program to read: true whenever it is actually moving. This is the EFFECTIVE speed, gates included, so a run tag holding it at zero reads false here."
+        },
+        "speedAt30": {
+          "type": "number",
+          "default": 1,
+          "min": 0.01,
+          "max": 10,
+          "step": 0.01,
+          "label": "Speed that reads 30 (m/s)",
+          "group": "Comms/Feedback",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": false
+          },
+          "desc": "The surface speed this conveyor reaches when its drive turns at 30. It scales the velocity tag: running at exactly this speed reads 30."
+        },
+        "speedAt30Fpm": {
+          "type": "number",
+          "default": 197,
+          "min": 1,
+          "max": 2000,
+          "step": 1,
+          "label": "Speed that reads 30 (FPM)",
+          "group": "Comms/Feedback",
+          "visibleWhen": {
+            "param": "fpmUnits",
+            "is": true
+          },
+          "desc": "The surface speed, in feet per minute, this conveyor reaches when its drive turns at 30. It scales the velocity tag: running at exactly this speed reads 30."
+        },
+        "velocityTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "REAL",
+          "default": "",
+          "label": "Velocity tag (30 at the speed above)",
+          "group": "Comms/Feedback",
+          "desc": "Drive feedback the program reads: the effective speed as a share of the speed at 30 revolutions, times 30. Stopped reads 0, and a run tag holding the conveyor still counts as stopped."
+        },
+        "inchesPerPulse": {
+          "type": "number",
+          "default": 1,
+          "min": 0.05,
+          "max": 100,
+          "step": 0.05,
+          "label": "Travel per pulse (in)",
+          "group": "Comms/Feedback",
+          "desc": "How far the surface travels between pulses on the pulse tag. A pulse cannot be finer than one simulation step, so a fast conveyor at a fine pitch needs a higher project simHz."
+        },
+        "pulseTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Pulse tag (one per pitch)",
+          "group": "Comms/Feedback",
+          "desc": "An encoder for the program to count: TRUE for one simulation step each time the surface has travelled the inches above, in either direction, and FALSE otherwise."
+        },
+        "encoderTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "REAL",
+          "default": "",
+          "label": "Encoder tag (travel)",
+          "unit": "m",
+          "group": "Comms/Feedback",
+          "desc": "Odometer of surface travel in metres, integrated on sim time: it climbs while the conveyor runs forward and counts back while it reverses. Latch it when a photo-eye sees a box, then act once it has advanced a known distance - the standard way to track product without a sensor at every station."
+        }
+      },
+      "behavior": "// Roller Conveyor — a powered roller bed. Demonstrates a conveying deck link: the behavior sets the surface\n// velocity along the flow axis (+X) and the host carries any cargo on the bed. A negative speed reverses it;\n// a PLC run tag can start/stop it. The rollers are decorative (the deck is the surface).\n//\n// The rig is a conveying deck under a world-phased pitch grid: the rollers are geometry() drawn on the grid's\n// stations, render-only, so coplanar roller bodies can't fight the deck for the contact.\n//\n// This is the part's source. `npm run build-parts` writes behavior.ts (this script as the app ships it, with the\n// _shared/ modules it imports joined in and `manifest` / `rig()` left out) and rig.json (the manifest, with the\n// rig compiled from rig()).\n\n// ---- from examples/parts/_shared/conveyorUnits.js ----\n/** metres per second in one foot per minute */\nconst FPM_MS = 0.00508\n\n/** `{ group }` to spread into a param, or nothing when there is no group */\nconst paramGroup = (group) => (group ? { group } : {})\n\n/** Spread into the part's own m/s `speed` and `speedTag` params: shown only while the PLC speaks metres per second. */\nconst METRIC_ONLY = { visibleWhen: { param: 'fpmUnits', is: false } }\n\n/** Params to stand BEFORE the part's own `speed`: the unit switch, and the speed in the other unit. */\nfunction speedUnitParams(speedMs) {\n  return {\n    fpmUnits: { type: 'boolean', default: true, whenAbsent: false, imperialUnits: true, label: 'PLC speed in FPM', desc: 'The unit the PLC commands this conveyor in. On: feet per minute. Off: metres per second. The speed tag is a REAL either way, so switching changes what its value means and never how the program declares it. Set by the scene Units (Scene Properties), which switch every conveyor together, so the Inspector does not show it. A conveyor saved before this switch existed is in metres per second.' },\n    speedFpm: { type: 'number', default: Math.round(speedMs / FPM_MS), min: -600, max: 600, step: 1, unit: 'FPM', label: 'Speed', visibleWhen: { param: 'fpmUnits', is: true }, desc: 'Surface speed in feet per minute. Negative runs it backwards. A program can command this through the FPM speed tag below.' },\n  }\n}\n\n/** The param to stand right AFTER the part's own `speedTag`: the same setpoint, in FPM. */\nfunction speedFpmTagParam(group) {\n  return {\n    speedFpmTag: { type: 'tag', dir: 'in', stType: 'REAL', setpointFor: 'speedFpm', default: '', label: 'Speed tag', ...paramGroup(group), visibleWhen: { param: 'fpmUnits', is: true }, desc: 'The program commands surface speed here in feet per minute, replacing the Speed field above, which then shows the live value read-only. Once BOUND this takes over even if no program writes it, so an unwritten tag holds the conveyor at 0.' },\n  }\n}\n\n/** In step(): the Inspector readout of whichever speed field is in use. `v` is the effective m/s. */\nfunction reportSpeed(ctx, fpm, v) {\n  if (fpm) ctx.report('speedFpm', Math.round(v / FPM_MS)); else ctx.report('speed', v)\n}\n\n// ---- from examples/parts/_shared/conveyorDrive.js ----\n/** Params to stand right AFTER the part's own `speed`: the drive's ramp, in seconds from stopped to rated. */\nfunction driveRampParams(accelTime, decelTime) {\n  return {\n    accelTime: { type: 'number', unit: 's', default: accelTime, min: 0, max: 30, step: 0.1, label: 'Accel time', desc: 'How long the drive takes to bring the conveyor from stopped up to its rated speed (the speed that reads 30, under Comms > Feedback), like the acceleration time set on a VFD. A smaller change takes proportionally less. 0 starts instantly.' },\n    decelTime: { type: 'number', unit: 's', default: decelTime, min: 0, max: 30, step: 0.1, label: 'Decel time', desc: 'How long the drive takes to bring the conveyor from rated speed down to a stop. Cargo keeps travelling while it does, so a box stopped at a photo-eye ends up past it. 0 stops instantly.' },\n  }\n}\n\n/** Params to stand after the part's `runningTag`: the velocity feedback, the pulse and the encoder, in a\n *  `Feedback` section under `group`. */\nfunction driveFeedbackParams(speedMs, group) {\n  const fpm = Math.round(speedMs / FPM_MS)\n  const g = paramGroup(group ? `${group}/Feedback` : 'Feedback')\n  return {\n    speedAt30: { type: 'number', default: speedMs, min: 0.01, max: 10, step: 0.01, label: 'Speed that reads 30 (m/s)', ...g, visibleWhen: { param: 'fpmUnits', is: false }, desc: 'The surface speed this conveyor reaches when its drive turns at 30. It scales the velocity tag: running at exactly this speed reads 30.' },\n    speedAt30Fpm: { type: 'number', default: fpm, min: 1, max: 2000, step: 1, label: 'Speed that reads 30 (FPM)', ...g, visibleWhen: { param: 'fpmUnits', is: true }, desc: 'The surface speed, in feet per minute, this conveyor reaches when its drive turns at 30. It scales the velocity tag: running at exactly this speed reads 30.' },\n    velocityTag: { type: 'tag', dir: 'out', stType: 'REAL', default: '', label: 'Velocity tag (30 at the speed above)', ...g, desc: 'Drive feedback the program reads: the effective speed as a share of the speed at 30 revolutions, times 30. Stopped reads 0, and a run tag holding the conveyor still counts as stopped.' },\n    inchesPerPulse: { type: 'number', default: 1, min: 0.05, max: 100, step: 0.05, label: 'Travel per pulse (in)', ...g, desc: 'How far the surface travels between pulses on the pulse tag. A pulse cannot be finer than one simulation step, so a fast conveyor at a fine pitch needs a higher project simHz.' },\n    pulseTag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Pulse tag (one per pitch)', ...g, desc: 'An encoder for the program to count: TRUE for one simulation step each time the surface has travelled the inches above, in either direction, and FALSE otherwise.' },\n    encoderTag: { type: 'tag', dir: 'out', stType: 'REAL', default: '', label: 'Encoder tag (travel)', unit: 'm', ...g, desc: 'Odometer of surface travel in metres, integrated on sim time: it climbs while the conveyor runs forward and counts back while it reverses. Latch it when a photo-eye sees a box, then act once it has advanced a known distance - the standard way to track product without a sensor at every station.' },\n  }\n}\n\n/** What a conveyor remembers between steps for its ramp, its pulse and its encoder. Make one at the top level. */\nfunction conveyorDrive() {\n  return {\n    pulseTravel: 0, // surface travel since the last pulse (in)\n    odo: 0, // encoder odometer: surface travel (m), signed with the direction of travel\n    driven: 0, // what the drive is actually doing (m/s): the command, through the accel/decel ramp\n    rampStarted: false, // past the first step, from which every change of command ramps\n  }\n}\n\n/** In step(): the unit the conveyor is set up in and the commanded speed, `{ fpm, setpointTag, commanded }`.\n *  `commanded` is always m/s, so everything after this call is m/s. */\nfunction commandedSpeed(ctx) {\n  const fpm = ctx.params.fpmUnits === true\n  const setpointTag = fpm ? ctx.params.speedFpmTag : ctx.params.speedTag\n  const unit = fpm ? FPM_MS : 1\n  const commanded = (setpointTag ? ctx.readNumber(setpointTag) : fpm ? ctx.params.speedFpm : ctx.params.speed) * unit\n  return { fpm, setpointTag, commanded }\n}\n\n/** In step(), after commandedSpeed(): the speed the surface actually runs at (m/s), `target` (the command, gates\n *  applied) through the drive's ramp. Away from 0 it accelerates at rated / accelTime; toward 0 it decelerates at\n *  rated / decelTime; a reversal runs down to 0 before it turns round.\n *  THE FIRST STEP: a conveyor whose speed or run gate a program owns starts from rest, because the program is\n *  starting the line; one running on its authored speed is already running at it, since nothing started it. */\nfunction rampedSpeed(ctx, drive, cmd, target) {\n  // rates are rated speed over the accel / decel time\n  const rated = cmd.fpm ? ctx.params.speedAt30Fpm * FPM_MS : ctx.params.speedAt30\n  let want = target\n  if (!drive.rampStarted) {\n    drive.rampStarted = true\n    // no program commands this conveyor: its authored speed is a belt that is running, not one being started\n    if (!(cmd.setpointTag || (ctx.params.runTag && ctx.tagDriven(ctx.params.runTag)))) drive.driven = want\n  }\n  if (want * drive.driven < 0) { if (ctx.params.decelTime > 0) want = 0; else drive.driven = 0 } // reversing: stop first\n  const rampTime = Math.abs(want) > Math.abs(drive.driven) ? ctx.params.accelTime : ctx.params.decelTime\n  drive.driven = rampTime > 0 && rated > 0 ? ctx.approach(drive.driven, want, (rated / rampTime) * ctx.dt) : want\n  return drive.driven\n}\n\n/** In step(): the velocity feedback, the pulse and the encoder, from the effective speed `v` (m/s). */\nfunction publishDrive(ctx, drive, cmd, v) {\n  // the velocity as a share of the speed at 30\n  const at30 = cmd.fpm ? ctx.params.speedAt30Fpm * FPM_MS : ctx.params.speedAt30\n  if (ctx.params.velocityTag) ctx.writeNumber(ctx.params.velocityTag, at30 > 0 ? (v / at30) * 30 : 0)\n  // the encoder pulse\n  const pitch = ctx.params.inchesPerPulse > 0 ? ctx.params.inchesPerPulse : 1\n  drive.pulseTravel += (Math.abs(v) * ctx.dt) / 0.0254\n  const pulse = drive.pulseTravel >= pitch - 1e-9 // (a hair of tolerance: twelve twelfths of an inch do not sum to exactly one)\n  if (pulse) drive.pulseTravel = Math.max(0, drive.pulseTravel - pitch * Math.max(1, Math.floor(drive.pulseTravel / pitch + 1e-9)))\n  if (ctx.params.pulseTag) ctx.writeTag(ctx.params.pulseTag, pulse)\n  drive.odo += v * ctx.dt\n  if (ctx.params.encoderTag) ctx.writeNumber(ctx.params.encoderTag, drive.odo)\n}\n\n// ---- from examples/parts/_shared/conveyorFriction.js ----\n/** The `friction` param, with the surface's default grip against a carton. */\nfunction frictionParam(carton) {\n  return {\n    friction: { type: 'number', default: carton, min: 0, step: 0.01, label: 'Friction', desc: 'Grip between the running surface and a standard carton, the figure a belt datasheet quotes. A smooth PVC belt is about 0.4, a rough-top incline belt about 0.9 and a low-friction plastic modular belt about 0.2, made for product to slide while it accumulates. Bare steel rollers are about 0.4. Other cargo grips by its own friction against the same surface.' },\n  }\n}\n\n// ---- from examples/parts/_shared/rollerBed.js ----\n/** the drive-band urethane (a warm amber, matte) as a package material: linear RGB of #d9772b */\n\n// The roller's profile, [radius, z] from the axle out to the tube, in the template's native units (radius 0.12):\n// the hub face, the chamfered bearing housing, the rim, and the tube.\nconst ROLLER_PROFILE = [[0, 0.938], [0.0689, 0.938], [0.0718, 0.9362], [0.0787, 0.9199], [0.1072, 0.9199], [0.1072, 0.9351], [0.1092, 0.9371], [0.118, 0.9371], [0.12, 0.9351]]\nconst ROLLER_TEMPLATE_R = 0.12, ROLLER_TEMPLATE_BODY = 2 * 0.9371 // tube radius, and the rim-to-rim length a body is fitted by\n// a roller shorter than this is a sliver at a clipped corner: dropped rather than drawn\nconst ROLLER_SLIVER = 0.02\n// Drive-band proportions as fractions of the ROLLER RADIUS, so every roller class keeps one look: on a 24 mm roller a\n// 4.8 mm cord (the common 3/16\" round band) in grooves 20 and 38 mm in from the bed edge.\nconst BAND_CORD_PER_R = 1 / 5, BAND_INSET_PER_R = 5 / 6, BAND_SPACING_PER_R = 3 / 4\n\n// the tube: the profile walked from the -Z hub to the +Z hub, turned about Z. Axle = local Z, centred.\nfunction rollerTemplate(g) {\n  var walk = []\n  for (var i = 0; i < ROLLER_PROFILE.length; i++) walk.push([ROLLER_PROFILE[i][0], -ROLLER_PROFILE[i][1]])\n  for (var k = ROLLER_PROFILE.length - 1; k >= 0; k--) walk.push([ROLLER_PROFILE[k][0], ROLLER_PROFILE[k][1]])\n  return g.lathe(walk, { axis: 'z', segments: 18, startAngle: Math.PI / 18 })\n}\n// an axle stub: a capped unit cylinder along Z, centred\nfunction stubTemplate(g) {\n  return g.lathe([[0, -0.5], [1, -0.5], [1, 0.5], [0, 0.5]], { axis: 'z', segments: 16 })\n}\n// a drive band's half-ring: a torus of loop radius lr and cord radius t over the -X half of the XY plane (the side of\n// a roller facing AWAY from the neighbour the band runs to). Axle = local Z.\nfunction bandArcTemplate(g, lr, t) {\n  var s = g.surface(), T = 10, N = 6, rows = []\n  for (var i = 0; i <= T; i++) {\n    var u = Math.PI * i / T, row = []\n    for (var j = 0; j < N; j++) {\n      var v = 2 * Math.PI * j / N, rr = lr + t * Math.cos(v)\n      row.push(s.vertex(-rr * Math.sin(u), rr * Math.cos(u), t * Math.sin(v)))\n    }\n    rows.push(row)\n  }\n  for (var a = 0; a < T; a++) for (var b = 0; b < N; b++) s.quad(rows[a][b], rows[a + 1][b], rows[a + 1][(b + 1) % N], rows[a][(b + 1) % N])\n  return s.build()\n}\n// a band's straight run: an open unit cylinder along X (its ends bury in the half-rings)\nfunction bandStrandTemplate(g) {\n  return g.lathe([[1, -0.5], [1, 0.5]], { axis: 'x', segments: 6 })\n}\nfunction yawQuat(yaw) { return [0, Math.sin(yaw / 2), 0, Math.cos(yaw / 2)] }\n\n// Where the bands go, from the rollers in bed order ({x, z, yaw, length}). A groove sits on the line\n// z = side * (zWall - inset) (or one spacing further in); pair k uses the first groove when k is even, the second when\n// odd, as a two-groove roller does. The band runs in the plane across the axles, so its far end is the near groove\n// point projected onto the next roller's axle. A pair is skipped when a groove point falls off its (clipped) roller,\n// when the two rollers aren't parallel, or when the gap is a dropped roller wide (over 1.5x the tightest pair).\nfunction layoutRollerBands(rollers, bands, fullAxle, radius) {\n  var side = bands.side || 1\n  var zWall = typeof bands.zWall === 'number' ? bands.zWall : fullAxle / 2\n  var cord = typeof bands.cord === 'number' ? bands.cord : radius * BAND_CORD_PER_R\n  var inset = typeof bands.inset === 'number' ? bands.inset : radius * BAND_INSET_PER_R\n  var spacing = typeof bands.spacing === 'number' ? bands.spacing : radius * BAND_SPACING_PER_R\n  var grooves = [side * (zWall - inset), side * (zWall - inset - spacing)]\n  var out = [], minSpan = Infinity\n  for (var k = 0; k + 1 < rollers.length; k++) {\n    var a = rollers[k], b = rollers[k + 1]\n    if (Math.abs(a.yaw - b.yaw) > 1e-4) continue\n    var sin = Math.sin(a.yaw), cos = Math.cos(a.yaw)\n    if (Math.abs(cos) < 1e-3) continue // an axle along the flow has no wall to measure a groove from\n    var zg = grooves[k % 2]\n    var ta = (zg - a.z) / cos\n    if (Math.abs(ta) > a.length / 2 - cord) continue\n    var px = a.x + ta * sin, pz = zg\n    var d = (b.x - px) * cos - (b.z - pz) * sin // across to b's axle, along the axle normal (cos, -sin)\n    if (Math.abs(d) < 1e-4) continue\n    var qx = px + d * cos, qz = pz - d * sin\n    var tb = (qx - b.x) * sin + (qz - b.z) * cos\n    if (Math.abs(tb) > b.length / 2 - cord) continue\n    minSpan = Math.min(minSpan, Math.abs(d))\n    out.push({ px: px, pz: pz, qx: qx, qz: qz, span: Math.abs(d) })\n  }\n  return { cord: cord, bands: out.filter(function (b) { return b.span <= minSpan * 1.5 }) }\n}\n\n// A roller bed as MeshParts: the tubes (spinning), their axle stubs (spinning with them) and, on a powered bed, the\n// drive bands (static - an even band looks the same moving or still, and a static bank merges across every bed).\n//   rollers  [{x, z, yaw, length}] in bed order: part-local centre, yaw about +Y (axle = local +Z yawed), body length\n//   o.radius the tube radius, which also sets the no-slip spin rate (speed / radius)\n//   o.y      the axle height in the frame the parts are drawn in\n//   o.link   the rig link to hang them on (optional)\n//   o.stub   { radius, length, protrude }: two shafts per roller, centred protrude past each (clipped) end\n//   o.bands  a band spec ({ zWall, inset, spacing, cord, side }, all optional) - omit for an unpowered bed\n//   o.fullAxle the unclipped axle length the bands measure the bed edge from (default the first roller's length)\n//   o.dropSlivers  skip rollers of length <= ROLLER_SLIVER\n//   o.bandMaterial the package material id the bands are drawn in (default 'band')\n//   o.speed  the reported value (ctx.report) that turns the rollers, m/s at the tube surface (default 'speed')\n// A positive speed turns the tubes the way that carries cargo toward +X on a bed whose axles run along Z: about -Z.\nfunction rollerBed(g, rollers, o) {\n  var R = o.radius, y = o.y || 0\n  var sxy = R / ROLLER_TEMPLATE_R\n  var spin = { axis: [0, 0, -1], radius: R }\n  if (o.speed) spin.speed = o.speed\n  var bodies = [], stubs = [], drawn = []\n  for (var i = 0; i < rollers.length; i++) {\n    var r = rollers[i]\n    if (o.dropSlivers && r.length <= ROLLER_SLIVER) continue\n    drawn.push(r)\n    var q = yawQuat(r.yaw)\n    bodies.push({ position: [r.x, y, r.z], quaternion: q, scale: [sxy, sxy, Math.max(0.01, r.length) / ROLLER_TEMPLATE_BODY] })\n    if (o.stub) {\n      var ax = Math.sin(r.yaw), az = Math.cos(r.yaw), so = r.length / 2 + o.stub.protrude\n      var ss = [o.stub.radius, o.stub.radius, o.stub.length]\n      stubs.push({ position: [r.x + ax * so, y, r.z + az * so], quaternion: q, scale: ss })\n      stubs.push({ position: [r.x - ax * so, y, r.z - az * so], quaternion: q, scale: ss })\n    }\n  }\n  var out = [{ desc: rollerTemplate(g), finish: 'roller', instances: bodies, spin: spin }]\n  if (o.stub) out.push({ desc: stubTemplate(g), finish: 'roller', instances: stubs, spin: spin, castShadow: false })\n  if (o.bands) {\n    var full = typeof o.fullAxle === 'number' ? o.fullAxle : (rollers.length ? rollers[0].length : 0)\n    var laid = layoutRollerBands(drawn, o.bands, full, R)\n    var cord = laid.cord, lr = R + cord * 0.4 // seated on the tube: the cord's inner edge just under the facet flats\n    var arcs = [], strands = []\n    for (var b = 0; b < laid.bands.length; b++) {\n      var bd = laid.bands[b]\n      var yaw = Math.atan2(-(bd.qz - bd.pz), bd.qx - bd.px) // band frame: local X toward q, local Z the axle\n      arcs.push({ position: [bd.qx, y, bd.qz], quaternion: yawQuat(yaw + Math.PI) })\n      arcs.push({ position: [bd.px, y, bd.pz], quaternion: yawQuat(yaw) })\n      var mx = (bd.px + bd.qx) / 2, mz = (bd.pz + bd.qz) / 2, sc = [bd.span, cord / 2, cord / 2]\n      strands.push({ position: [mx, y + lr, mz], quaternion: yawQuat(yaw), scale: sc })\n      strands.push({ position: [mx, y - lr, mz], quaternion: yawQuat(yaw), scale: sc })\n    }\n    // finish 'mesh' says plainly what they are: a finish-less submesh of a CONVEYING function part is read as its belt\n    // fabric, which would draw the bands in the belt weave\n    var bm = o.bandMaterial || 'band'\n    out.push({ desc: bandArcTemplate(g, lr, cord / 2), finish: 'mesh', material: bm, instances: arcs, castShadow: false })\n    out.push({ desc: bandStrandTemplate(g), finish: 'mesh', material: bm, instances: strands, castShadow: false })\n  }\n  if (o.link) for (var m = 0; m < out.length; m++) out[m].link = o.link\n  return out\n}\n\n// ---- from examples/parts/_shared/rollerFrame.js ----\n/** The roller beds' `frameHeight` param: the side frame channel's height (deck-side top 5 mm under the\n *  conveying plane, as on every bed). Same meaning and default as the belt's `height`, whose frame wall is that deep,\n *  so a roller bed set to a belt's Frame height meets its frame flush. A geometry()-tier bed reads its frame bottom\n *  through frameBottom(); a rig bed tracks it with sizeParams / offsetParams / leg frameDepthParam.\n *  Same range as the belt's, so every Frame height has a roller bed that matches it; on a shallow frame the legs'\n *  mounting brackets shorten to stay under the deck (legPieces' frameDepth, _shared/legs.js). */\nfunction frameHeightParam(group) {\n  return {\n    frameHeight: { type: 'number', default: 0.17, min: 0.1, max: 0.6, step: 0.01, label: 'Frame height (m)', ...(group ? { group } : {}), desc: 'Depth of the side frame channel below the rollers. Set it to the Frame height of the conveyor this bed butts against so the two frames line up at the joint. The legs shorten or lengthen to meet the frame bottom; the deck height does not move.' },\n  }\n}\n\n/** The frame bottom's y (negative, below the deck) for a geometry()-tier bed.\n *  Rounded to the micrometre exactly as the belt's is, so at the default it is the literal -0.175 the pooled rail\n *  template is shared by value with (0.17 + 0.005 is 0.17500000000000002 in binary). */\n\nvar R = 0.024, PITCH = 0.075 // rendered roller radius (the roller template's 0.12 scaled down), roller pitch (the rig's grid spacing)\nconst STUB_R = R * 0.34 //   thin axle-shaft stubs poking through the frame\n\nconst drive = conveyorDrive() // the ramp, the pulse and the encoder, remembered between steps\n\n// Each roller's placement, from the grid the host resolved (ctx.deltas: the world-phased pitch grid shared with\n// butted beds). Straight: full-length rollers (yaw 0) at every grid line. Skewed: rotate each about +Y by `skew`,\n// lengthen to axle/cos so it spans the bed, and clip to the frame corners. With no grid (a headless call), a\n// centred one at the same pitch.\nfunction layoutRollers(deltas, p) {\n  var skewRad = (typeof p.skew === 'number' ? p.skew : 0) * Math.PI / 180\n  var width = typeof p.width === 'number' ? p.width : 1.524\n  var length = typeof p.length === 'number' ? p.length : 4\n  var axle = width - 0.004 // the body recessed just behind the frame walls\n  if (!deltas || deltas.length === 0) {\n    deltas = []\n    var n = Math.max(1, Math.floor((length - 2 * R) / PITCH) + 1)\n    for (var d = 0; d < n; d++) deltas.push([(d - (n - 1) / 2) * PITCH, 0, 0])\n  }\n  var out = []\n  var sin = Math.sin(skewRad)\n  if (Math.abs(sin) < 1e-6) {\n    for (var i = 0; i < deltas.length; i++) out.push({ x: deltas[i][0], z: 0, yaw: 0, length: axle })\n    return out\n  }\n  // skewed: the rotated shaft is parameterised by t in [-full/2, full/2]; clip t to BOTH the shaft extent and the\n  // frame ends X = +-halfLen (X = dx + t*sin). The visible segment's length + centre offset give the roller.\n  var cos = Math.cos(skewRad)\n  var full = axle / Math.abs(cos) // width/cos - spans wall-to-wall when rotated\n  var halfShaft = full / 2\n  var halfLen = length / 2 - R * Math.abs(cos) // effective half-length (inset a roller radius)\n  for (var k = 0; k < deltas.length; k++) {\n    var dx = deltas[k][0]\n    var tPos = (halfLen - dx) / sin, tNeg = (-halfLen - dx) / sin\n    var tMin, tMax\n    if (sin > 0) { tMax = Math.min(halfShaft, tPos); tMin = Math.max(-halfShaft, tNeg) }\n    else { tMax = Math.min(halfShaft, tNeg); tMin = Math.max(-halfShaft, tPos) }\n    var clipLen = tMax - tMin\n    if (clipLen <= 0.02) continue // a sliver at the very corner - drop it\n    var offset = (tMax + tMin) / 2\n    out.push({ x: dx + offset * sin, z: offset * cos, yaw: skewRad, length: clipLen })\n  }\n  return out\n}\n\ndefinePart({\n  params: {\n    // 'face' handles add viewport resize dots: a ±X dot drives length, ±Z drives width (clamped to the\n    // param's min/max); the host reflows the rig live. length has no max — a roller bed can be any length.\n    length: { type: 'number', default: 4, min: 0.5, step: 0.1, label: 'Length (m)', handle: { kind: 'face', axis: 'x' }, group: 'Size', desc: 'Bed length along travel. Drag the dot on either end face to resize in the viewport; there is no upper limit, so one bed can stand in for a long run.' },\n    width: { type: 'number', default: 1.524, min: 0.2, step: 0.05, label: 'Width (m)', handle: { kind: 'face', axis: 'z' }, group: 'Size', desc: 'Bed width across travel. Drag the dot on either side face to resize in the viewport.' },\n    ...frameHeightParam('Size'),\n    ...speedUnitParams(1.0),\n    speed: { type: 'number', unit: 'm/s', ...METRIC_ONLY, default: 1.0, min: -3, max: 3, step: 0.1, label: 'Speed', desc: 'Surface speed carried along the bed. Negative runs the rollers backwards, which is the ONLY way to reverse flow - rotating the part 180 degrees moves its ends instead. A program can command this through the speed tag below.' },\n    ...driveRampParams(0.2, 0.2),\n    ...frictionParam(0.42),\n    // skew — angle the rollers for angled product movement: cargo tracks across the bed and squares against\n    // a side guard. layoutRollers() rotates the rollers (lengthened to width/cos, clipped to the frame\n    // corners) and step() angles the surface velocity to match; the guard collision does the squaring.\n    skew: { type: 'number', unit: '°', default: 0, min: -60, max: 60, step: 1, label: 'Roller skew', desc: 'Angle the rollers so cargo drifts sideways as it travels and squares itself against a side guard - the standard way to align product before a merge or a labeller. The surface velocity follows the angle, and the guard does the squaring, so leave the guard on that side up.' },\n    // incline — tilt the whole rigid bed about its centre, +X head up. Host-owned via the rig inclineParam\n    // marker: geometry + collision tilt as one, the trestle legs regrow to the floor, and the deck's surface\n    // velocity gets the tilted tangent — so step() needs no incline math. ±30°: rollers shed product on a\n    // steeper grade, unlike belts which hold it.\n    tiltDeg: { type: 'number', unit: '°', default: 0, min: -30, max: 30, step: 1, label: 'Incline', desc: 'Tilt the bed about its centre, positive lifting the head. Incline a roller bed this way, not by rotating the part, which tips its snap ends too; the legs regrow to the floor. Capped at 30 degrees: rollers shed product on a steeper grade, where a belt holds it.' },\n    // guard toggles — a false showParam removes the wall's render AND its collision body (a real opening,\n    // not just hidden), so cargo can be diverted off / loaded on. Left = −Z, right = +Z (belt convention).\n    leftGuard: { type: 'boolean', default: true, label: 'Left guard', group: 'Guards', desc: 'Guard wall down the left side, looking along travel. This is a real barrier, so turning it off lets cargo leave the bed sideways.' },\n    rightGuard: { type: 'boolean', default: true, label: 'Right guard', group: 'Guards', desc: 'Guard wall down the right side, looking along travel. This is a real barrier, so turning it off lets cargo leave the bed sideways.' },\n    // side-guard openings as [start m, end m, side] rows — measured from the TAIL (upstream end), side −1 =\n    // left, +1 = right, 0 = both. Same rows, same meaning as the belt conveyor's; press G with the bed\n    // selected to drag them in the viewport. Cuts a gap in the guard wall's render AND collision (a sensor,\n    // a hand transfer). The rig guard links are what get split, so the host consumes this param rather than\n    // geometry() — declaring it is the opt-in (core/guardOpenings.ts addAuthoredOpenings).\n    // Neighbour-auto openings (a guard opening itself where another conveyor butts) stay a host concern.\n    guardOpenings: { type: 'numberList', columns: ['start m', 'end m', 'side ±1/0'], arity: 3, default: [], label: 'Guard openings', group: 'Guards', desc: 'Gaps cut in the guard wall, measured as distance ALONG the bed from the tail. Side -1 is left, +1 is right, 0 cuts both. Each gap opens the collision as well as the mesh, which is how a transfer or a diverter gets product off the lane. Press G with the bed selected to drag them in the viewport.' },\n    // deck height above the floor — drives the leg length. rest:'surfaceBelow' lets the host auto-fill it\n    // from the surface beneath at drop/snap, so the legs auto-adjust to reach the floor (or a platform).\n    standHeight: { type: 'number', default: 2.0, min: 0.1, max: 3, step: 0.01, rest: 'surfaceBelow', label: 'Stand height (m)', desc: 'Height of the deck above whatever is beneath it, which sets the leg length. The host fills this in when you drop or snap the conveyor, so the legs reach the floor - or a platform crossing underneath - without you measuring. Pin it by hand when you want a deliberate height.' },\n    // Comms trio: speedTag = REAL setpoint in (replaces the speed param), runningTag = BOOL feedback out\n    // (effective speed ≠ 0); runTag = BOOL run/stop gate (back-compat).\n    speedTag: { type: 'tag', ...METRIC_ONLY, dir: 'in', stType: 'REAL', setpointFor: 'speed', default: '', label: 'Speed tag', group: 'Comms', desc: 'The program commands surface speed here, replacing the Speed field above, which then shows the live value read-only. Careful: once BOUND this takes over even if no program drives it, and an undriven tag reads 0 - so a half-wired conveyor sits still rather than running at its authored speed.' },\n    ...speedFpmTagParam('Comms'),\n    runTag: { type: 'tag', dir: 'in', stType: 'BOOL', onlyWhenDriven: true, default: '', label: 'Run tag (rollers run while true)', group: 'Comms', desc: 'Start/stop gate: false forces the speed to 0 whatever the setpoint says. Unlike the speed tag, this only takes effect once a program actually DRIVES it, so binding it alone will not stop the bed.' },\n    runningTag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Running tag (true while moving)', group: 'Comms', desc: 'Feedback the conveyor publishes for the program to read: true whenever it is actually moving. This is the EFFECTIVE speed, gates included, so a run tag holding it at zero reads false here.' },\n    ...driveFeedbackParams(1.0, 'Comms'),\n  },\n  // Geometry — the roller bed, and the skew transfer plates: the light-steel corner dead-plates that fill the\n  // triangular gaps the angled rollers leave at the head/tail once skewed. Render-only, emitted on the 'roller'\n  // rig link so they ride the incline.\n  //\n  // `ctx` is the host-resolved seam (GeometryContext): the world-phase roller grid this bed landed on, plus\n  // which of its ends abut a collinear neighbour. The plate needs it because it REPLACES the rollers the skew\n  // clipped away, so at a butt it has to finish where a roller would have. Ending it flush at the bed end\n  // leaves up to (pitch - R) of bare deck at the transfer — the neighbour's first roller is on the shared\n  // grid, wherever the pair happens to sit in world X — against the ONE roller gap an unskewed bed shows\n  // there. See the lip below.\n  geometry(g, p, ctx) {\n    // the rollers: the kit's bed on the grid's stations (tubes + axle stubs + drive bands), drawn on the 'roller'\n    // link at its axle datum (y 0 there). Stubs poke 9.5 mm past each (clipped) end and follow its yaw; the\n    // bands chain each roller to the next at the +Z end, alternating two grooves in from the bed edge - the look of\n    // a powered (MDR) bed. They turn at the effective speed step() reports.\n    var axle = (typeof p.width === 'number' ? p.width : 1.524) - 0.004\n    var bed = rollerBed(g, layoutRollers(ctx && ctx.deltas, p), { radius: R, y: 0, link: 'roller', stub: { radius: STUB_R, length: 0.045, protrude: 0.0095 }, bands: {}, fullAxle: axle, dropSlivers: true })\n    return bed.concat(skewPlates())\n\n    function skewPlates() {\n      var skewRad = (typeof p.skew === 'number' ? p.skew : 0) * Math.PI / 180\n      if (Math.abs(skewRad) < 1e-4) return []\n      var width = typeof p.width === 'number' ? p.width : 1.524\n      var length = typeof p.length === 'number' ? p.length : 4\n      if (width <= 0 || length <= 0) return []\n      // the 'roller' link group sits R below the deck; lift the plate top to roller-top level + a hair (no z-fight),\n      // dropping a 2R skirt so it reads as a solid plate, not a paper-thin sheet.\n      var yTop = R + 0.001, yBot = yTop - 2 * R\n      var halfW = width / 2, headX = length / 2, tailX = -length / 2\n      // X-extent of the triangular gap the angled rollers leave at each end (clamped to the length)\n      var skewZone = Math.min(halfW * Math.abs(Math.tan(skewRad)), length)\n      var headInset = headX - skewZone, tailInset = tailX + skewZone\n      var zSign = skewRad > 0 ? 1 : skewRad < 0 ? -1 : 1 // which diagonal each plate leans along (the union is the same either way)\n      var s = g.surface()\n      function tri(ax, ay, az, bx, by, bz, cx, cy, cz) { s.triangle(s.vertex(ax, ay, az), s.vertex(bx, by, bz), s.vertex(cx, cy, cz)) }\n      // one triangular dead-plate: top face v1-v3-v2 + a skirt down the v1-v3 (diagonal) and v2-v3 (end) edges (the\n      // v1-v2 edge sits against the frame wall, no skirt). doubleSided, so winding is cosmetic.\n      function plate(x1, z1, x2, z2, x3, z3) {\n        tri(x1, yTop, z1, x3, yTop, z3, x2, yTop, z2)\n        tri(x1, yTop, z1, x1, yBot, z1, x3, yBot, z3); tri(x3, yBot, z3, x3, yTop, z3, x1, yTop, z1)\n        tri(x2, yTop, z2, x2, yBot, z2, x3, yBot, z3); tri(x3, yBot, z3, x3, yTop, z3, x2, yTop, z2)\n      }\n      plate(headInset, zSign * halfW, headX, zSign * halfW, headX, 0)\n      plate(headInset, -zSign * halfW, headX, -zSign * halfW, headX, 0)\n      plate(tailInset, -zSign * halfW, tailX, -zSign * halfW, tailX, 0)\n      plate(tailInset, zSign * halfW, tailX, zSign * halfW, tailX, 0)\n      // TRANSFER LIP — the full-width strip that carries the plate across a butt seam to the neighbour's first\n      // roller. Two beds butted end to end share ONE world pitch grid, so that roller sits on the next grid line\n      // past this end: lap out to its face (grid line -/+ R) and the transfer is continuous at every phase.\n      // Bounded by R, the most a roller of our own would ever poke past the frame, which is also what stops the\n      // lip from cutting THROUGH the neighbour's roller when that roller lands right at the seam. Gated on\n      // `butt`: at a free end there is nothing to meet, so the plate stays flush with the frame as before.\n      // Both fall back to 0 without a ctx (headless / parity call) — the placement-free plate.\n      var c = ctx || {}\n      var deltas = c.deltas, pitch = typeof c.pitch === 'number' ? c.pitch : 0\n      var butt = c.butt || { head: false, tail: false }\n      var gridded = !!deltas && deltas.length > 0 && pitch > 0\n      // bare deck between our end and the neighbour's first roller face, clamped to [0, R]\n      function lapTo(on, edge, line) {\n        if (!on || !gridded) return 0\n        return Math.max(0, Math.min(R, Math.abs(line - edge) - R))\n      }\n      var lapHead = lapTo(butt.head, headX, gridded ? deltas[deltas.length - 1][0] + pitch : 0)\n      var lapTail = lapTo(butt.tail, tailX, gridded ? deltas[0][0] - pitch : 0)\n      // one end lip: the top strip from the bed end out to x2, plus the same 2R skirt the plates carry on its\n      // outer edge so it still reads as steel rather than a paper sheet. doubleSided, so winding is cosmetic.\n      function lip(x1, x2) {\n        if (Math.abs(x2 - x1) < 1e-5) return\n        tri(x1, yTop, -halfW, x2, yTop, -halfW, x2, yTop, halfW)\n        tri(x1, yTop, -halfW, x2, yTop, halfW, x1, yTop, halfW)\n        tri(x2, yTop, -halfW, x2, yBot, -halfW, x2, yBot, halfW)\n        tri(x2, yBot, halfW, x2, yTop, halfW, x2, yTop, -halfW)\n      }\n      lip(headX, headX + lapHead)\n      lip(tailX, tailX - lapTail)\n      return [{ desc: s.build(), finish: 'gapfill', link: 'roller', castShadow: false, doubleSided: true }]\n    }\n  },\n  step(ctx) {\n    // Tag precedence: speedTag (REAL in) replaces the speed param as the commanded speed; runTag (BOOL)\n    // gates it to 0, but ONLY while a controller actually drives the tag (ctx.tagDriven, output ownership) —\n    // undriven, the authored speed rules; runningTag (BOOL out) = effective speed ≠ 0, written every step.\n    // the unit the conveyor is set up in: everything below this line is m/s\n    const cmd = commandedSpeed(ctx)\n    const fpm = cmd.fpm\n    const running = ctx.tagDriven(ctx.params.runTag) ? ctx.readTag(ctx.params.runTag) : true\n    const s = rampedSpeed(ctx, drive, cmd, running ? cmd.commanded : 0)\n    // the readout the Inspector shows for 'speed' while a setpoint tag owns it: the EFFECTIVE value,\n    // gates and all, not the raw setpoint (a runTag holding this at 0 must not read as the commanded rate)\n    reportSpeed(ctx, fpm, s)\n    if (fpm) ctx.report('speed', s) // the rollers turn on 'speed' (m/s); the fpm readout above doesn't report it\n    if (ctx.params.runningTag) ctx.writeTag(ctx.params.runningTag, s !== 0)\n    // drive feedback: the velocity as a share of the speed at 30, an encoder pulse and the odometer\n    publishDrive(ctx, drive, cmd, s)\n    // skew: the rollers are angled about vertical, so drive along the roller normal — forward rotated by\n    // skew (right-handed about +Y) at magnitude s/cos(skew), so the forward throughput stays s and the\n    // lateral s·tan(skew) squares cargo against the guard.\n    const skewRad = (ctx.params.skew || 0) * Math.PI / 180\n    const c = Math.cos(skewRad), sn = Math.sin(skewRad)\n    const mag = Math.abs(c) > 1e-3 ? s / c : s\n    const fx = ctx.forward.x, fz = ctx.forward.z\n    ctx.setSurfaceVelocity({ x: (fx * c + fz * sn) * mag, y: 0, z: (-fx * sn + fz * c) * mag })\n  },\n})\n",
+      "geometry": {
+        "kind": "rig",
+        "inclineParam": "tiltDeg",
+        "maxInclineDeg": 30,
+        "links": [
+          {
+            "name": "deck",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.04,
+                1.524
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                },
+                {
+                  "axis": 2,
+                  "param": "width",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              -0.02,
+              0
+            ],
+            "conveys": true,
+            "hidden": true,
+            "color": [
+              0.1,
+              0.1,
+              0.11
+            ]
+          },
+          {
+            "name": "roller",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              -0.024,
+              0
+            ],
+            "array": {
+              "distribute": {
+                "axis": 0,
+                "spanParam": "length",
+                "maxSpacing": 0.075,
+                "worldPhase": true
+              }
+            }
+          },
+          {
+            "name": "wallL",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.17,
+                0.01
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                },
+                {
+                  "axis": 1,
+                  "param": "frameHeight",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              -0.09,
+              -0.767
+            ],
+            "offsetParams": [
+              {
+                "axis": 1,
+                "param": "frameHeight",
+                "scale": -0.5,
+                "add": -0.005
+              },
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": -0.5,
+                "add": -0.005
+              }
+            ],
+            "finish": "frame",
+            "sideRail": "left",
+            "bed": true
+          },
+          {
+            "name": "wallR",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.17,
+                0.01
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                },
+                {
+                  "axis": 1,
+                  "param": "frameHeight",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              -0.09,
+              0.767
+            ],
+            "offsetParams": [
+              {
+                "axis": 1,
+                "param": "frameHeight",
+                "scale": -0.5,
+                "add": -0.005
+              },
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": 0.5,
+                "add": 0.005
+              }
+            ],
+            "finish": "frame",
+            "sideRail": "right",
+            "bed": true
+          },
+          {
+            "name": "flangeL",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.005,
+                0.02
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              -0.0025,
+              -0.782
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": -0.5,
+                "add": -0.02
+              }
+            ],
+            "finish": "frame",
+            "sideRail": "left",
+            "bed": true,
+            "collision": "none"
+          },
+          {
+            "name": "flangeR",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.005,
+                0.02
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              -0.0025,
+              0.782
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": 0.5,
+                "add": 0.02
+              }
+            ],
+            "finish": "frame",
+            "sideRail": "right",
+            "bed": true,
+            "collision": "none"
+          },
+          {
+            "name": "guardL",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.155,
+                0.005
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              0.0725,
+              -0.7745
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": -0.5,
+                "add": -0.0125
+              }
+            ],
+            "finish": "guard",
+            "sideGuard": "left",
+            "showParam": "leftGuard"
+          },
+          {
+            "name": "guardR",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.155,
+                0.005
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              0.0725,
+              0.7745
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": 0.5,
+                "add": 0.0125
+              }
+            ],
+            "finish": "guard",
+            "sideGuard": "right",
+            "showParam": "rightGuard"
+          },
+          {
+            "name": "lipL",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.005,
+                0.02
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              0.1475,
+              -0.787
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": -0.5,
+                "add": -0.025
+              }
+            ],
+            "finish": "guard",
+            "sideGuard": "left",
+            "showParam": "leftGuard",
+            "collision": "none"
+          },
+          {
+            "name": "lipR",
+            "shape": {
+              "kind": "box",
+              "size": [
+                4,
+                0.005,
+                0.02
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length",
+                  "scale": 1
+                }
+              ]
+            },
+            "offset": [
+              0,
+              0.1475,
+              0.787
+            ],
+            "offsetParams": [
+              {
+                "axis": 2,
+                "param": "width",
+                "scale": 0.5,
+                "add": 0.025
+              }
+            ],
+            "finish": "guard",
+            "sideGuard": "right",
+            "showParam": "rightGuard",
+            "collision": "none"
+          },
+          {
+            "name": "legs",
+            "shape": {
+              "kind": "leg",
+              "spanParam": "length",
+              "widthParam": "width",
+              "standParam": "standHeight",
+              "frameDepth": 0.175,
+              "frameDepthParam": {
+                "param": "frameHeight",
+                "add": 0.005
+              }
+            },
+            "offset": [
+              0,
+              -2,
+              0
+            ],
+            "offsetParams": [
+              {
+                "axis": 1,
+                "param": "standHeight",
+                "scale": -1
+              }
+            ]
+          }
+        ],
+        "joints": [],
+        "bounds": {
+          "length": 4,
+          "width": 1.6,
+          "top": 2.3
+        }
+      },
+      "category": "Equipment",
+      "materials": [
+        {
+          "id": "band",
+          "color": [
+            0.6939,
+            0.1844,
+            0.0242
+          ],
+          "metalness": 0,
+          "roughness": 0.55
+        }
+      ],
+      "conveyor": {
+        "bed": "straight",
+        "surface": "roller",
+        "speedParam": "speed",
+        "frictionParam": "friction"
+      },
+      "sdk": {
+        "level": 12,
+        "of": "v2:40623:1ogbqxbrses"
+      },
+      "origin": {
+        "app": "v2:40623:1ogbqxbrses"
+      }
+    },
+    {
+      "format": 6,
+      "id": "oip.color-sensor",
+      "name": "Color Sensor",
+      "params": {
+        "maxRange": {
+          "type": "number",
+          "default": 2,
+          "min": 0.1,
+          "max": 10,
+          "step": 0.05,
+          "label": "Max range (m)",
+          "desc": "How far down the beam a target is still read. The beam is cast along local +Z, so aim the sensor by rotating it."
+        },
+        "showBeam": {
+          "type": "boolean",
+          "default": true,
+          "label": "Show beam",
+          "desc": "Draw the beam line in the viewport. A viewing aid only - hiding it does not change what the sensor reads."
+        },
+        "colors": {
+          "type": "color",
+          "list": true,
+          "default": "#ff0000,#00ff00,#0000ff",
+          "label": "Colors",
+          "desc": "The colours this sensor tells apart. The colour code is the position in this list: 1 for the first, 2 for the second, and so on."
+        },
+        "tolerance": {
+          "type": "number",
+          "default": 80,
+          "min": 0,
+          "max": 255,
+          "step": 1,
+          "label": "Match tolerance",
+          "desc": "How far a tint may be from a listed colour and still match, in steps of 0 to 255 on each of red, green and blue. 0 matches only the exact colour. When two listed colours are within range, the closer one wins."
+        },
+        "colorTag": {
+          "type": "tag",
+          "values": [
+            {
+              "value": 0,
+              "label": "none"
+            }
+          ],
+          "dir": "out",
+          "stType": "INT",
+          "default": "",
+          "label": "Color code tag",
+          "group": "Comms",
+          "desc": "Where the detected colour code is published: the position of the matched colour in Colors (1 = the first), or 0. It reads 0 both when nothing is in range and when no listed colour matches, so pair it with a presence sensor if the difference matters."
+        }
+      },
+      "behavior": "// Color Sensor — a photoeye that tells which of a list of colours the cargo crossing its beam is. Demonstrates the\n// colour output of sensing: the host hands ctx.sense().color the detected tint; the behavior matches it against the\n// `colors` param and publishes a code an ST program reads as an INT: 1 for the first colour in the list, 2 for the\n// second, and so on, 0 for nothing in range or no listed colour within the tolerance.\n//\n// It shares the Photo Eye's housing (_shared/sensorPhotoeye.js), in its own colours (teal body, red lens).\n//\n// This is the part's source. `npm run build-parts` writes behavior.ts (this script as the app ships it, with the\n// _shared/ modules it imports joined in and `manifest` / `rig()` left out) and rig.json (the manifest, with the\n// rig compiled from rig()).\n\n// The `colors` param ('#rrggbb' joined by commas) as sRGB 0..255 triples, the same space ctx.sense().color is in.\n// Parsed again only when the param changes.\n\n// ---- from examples/parts/_shared/sensorOutlines.js ----\n// a rounded-corner rectangle, for windows and panels\nfunction rrect(x0, y0, x1, y1, r) {\n  const pts = []\n  for (const [cx, cy, a0] of [[x1 - r, y0 + r, -Math.PI / 2], [x1 - r, y1 - r, 0], [x0 + r, y1 - r, Math.PI / 2], [x0 + r, y0 + r, Math.PI]])\n    for (let k = 0; k <= 3; k++) { const a = a0 + (k * Math.PI) / 6; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]) }\n  return pts\n}\n\n// a 16-sided circle, for mounting holes\nfunction circle(cy, cz, r) {\n  const pts = []\n  for (let k = 0; k < 16; k++) { const a = (k * Math.PI) / 8; pts.push([cy + r * Math.cos(a), cz + r * Math.sin(a)]) }\n  return pts\n}\n\n// ---- from examples/parts/_shared/sensorPhotoeye.js ----\nconst PHOTOEYE = {\n  halfX: 0.0225, // 45 mm wide\n  back: -0.036,\n  front: 0.037, // the lens face: SENSOR_EMIT_Z, the beam origin and the guard contact\n  bodyY0: 0.036, // the housing's underside; the M8 plug hangs below it\n  bodyY1: 0.15,\n  height: 0.16, // SENSOR_HEIGHT: the pot on the top cap reaches it\n  emitY: 0.1, // SENSOR_EMIT_Y, inside the lens window\n  led: [0, 0.124, 0.034], // the detection LED, on the face above the window\n}\n\n// The photoeye's MOUNTING BRACKET, which bolts it to a conveyor's SIDE FRAME - with a guard or without one, and\n// touching neither anywhere but where it is bolted.\n//\n// The guard mount seats the eye with its origin 20 mm below the deck and its lens face 20 mm out from the bed edge,\n// over the frame's L-rail (examples/parts/belt-conveyor's rail template; the roller bed's is the same): a WALL whose\n// face is 10 mm out from the bed edge, running down from 5 mm under the deck, a 5 mm top LIP reaching out to 30 mm at\n// deck height, and - where the bed has one - a GUARD sheet standing on the rail 10..15 mm out (GUARD_THICKNESS).\n// Measured outward from the bed edge (u, which is FRONT + 0.02 - z in part-local z), the bracket is:\n//   - a SIDE PLATE on the housing's +X flank, bolted through its two holes. Its profile steps round the steel: from\n//     the housing down to 3 mm over the lip it stays out past u 23 mm (clear of a guard's 15), past the lip it stays\n//     out past the lip's 30 mm tip, and only well under the lip - below the axle heads studding the wall just under\n//     it - does it step in to the wall;\n//   - a TOE there, square across the beam, flat on the wall face (u 10..13 mm) and bolted to it.\n// A floor stand bolts to the toe's face the same way (src/editor/demoScenes.ts EYE_STAND_*), so its numbers are\n// transcribed there.\n//\n// A STOPGAP, and a deliberate copy: the rail's numbers above belong to the conveyor, and are repeated here only\n// because a host cannot yet say what steel it offers. Retire this (and EYE_STAND_*) when conveyors publish their\n// rail profile on their snap surface and the SDK's bracket helper draws from the seat a mount stores.\nconst PHOTOEYE_BRACKET = {\n  gauge: 0.003, // the sheet\n  width: 0.052, // the toe across the beam, from the plate: clear of the lens window by 7.5 mm\n  wall: 0.01, // u of the wall's face, which the toe's back lies on\n  clearGuard: 0.023, // u the plate keeps out past above the lip (the guard's face 0.015, the lens face 0.02)\n  clearLip: 0.033, // ...and past at the lip (its tip 0.03)\n  lipY: [0.015, 0.02], // the lip's underside and top, in part-local y (the deck is at 0.02)\n  toeTop: -0.025, // where the plate steps in to the toe: clear below the axle heads (part-local y)\n  bottom: -0.07, // the toe's foot\n  bolts: [-0.06, -0.035], // its two bolts into the wall\n  back: 0.046, // u of the plate's back edge, behind the housing's holes (0.031)\n}\n\n// The bracket's pieces. Each takes u2z, which maps u (outward from the bed edge) to part-local z on the side the\n// piece is drawn on, so a reflector across the bed can draw the same bracket mirrored.\n\n// a hex bolt head along `axis`\nfunction photoeyeHex(g, axis, center) {\n  return g.lathe([[0, 0], [0.0065, 0], [0.0065, 0.004], [0, 0.004]], { axis, center, segments: 6, smooth: false })\n}\n\n// the side plate in the x plane [x0, x0 + gauge], from yTop down; its face nearest the bed at uIn above the lip\nfunction photoeyeSidePlate(g, x0, yTop, uIn, u2z) {\n  const B = PHOTOEYE_BRACKET\n  return g.extrude([\n    [yTop, uIn], [yTop, B.back], [B.bottom, B.back], [B.bottom, B.wall + B.gauge], [B.toeTop, B.wall + B.gauge], [B.toeTop, B.clearLip],\n    [B.lipY[1] + 0.003, B.clearLip], [B.lipY[1] + 0.003, uIn],\n  ].map(([y, u]) => [y, u2z(u)]), x0, x0 + B.gauge, { axis: 'x' })\n}\n\n// the toe across [x0, x0 + width], its back on the wall\nfunction photoeyeToe(g, x0, u2z) {\n  const B = PHOTOEYE_BRACKET\n  return g.box([B.width, B.toeTop - B.bottom, B.gauge], [x0 + B.width / 2, (B.bottom + B.toeTop) / 2, (u2z(B.wall) + u2z(B.wall + B.gauge)) / 2])\n}\n\n// the toe's two bolts into the wall, at x\nfunction photoeyeToeBolts(g, x, u2z) {\n  const B = PHOTOEYE_BRACKET\n  return B.bolts.map((y) => g.lathe([[0, 0], [0.0065, 0], [0.0065, 0.004], [0, 0.004]], {\n    axis: 'z', center: [x, y, Math.min(u2z(B.wall + B.gauge), u2z(B.wall + B.gauge + 0.004))], segments: 6, smooth: false,\n  }))\n}\n\n// The housing and its bracket, as geometry() returns them. Materials: body, black (plug, cap), lens (window),\n// pot, steel (the bracket).\nfunction photoeyeHousing(g) {\n  const X = PHOTOEYE.halfX, BACK = PHOTOEYE.back, FRONT = PHOTOEYE.front, Y0 = PHOTOEYE.bodyY0, Y1 = PHOTOEYE.bodyY1\n  const CH = 0.024 // the chamfer across the lower back corner\n  // the housing: its side profile (y, z) run across the width, with two mounting holes through it\n  const body = g.extrude(\n    [[Y0, BACK + CH], [Y0, FRONT], [Y1, FRONT], [Y1, BACK], [Y0 + CH, BACK]],\n    -X, X,\n    { axis: 'x', bevel: 0.0015, holes: [circle(Y0 + 0.012, FRONT - 0.011, 0.0042), circle(Y1 - 0.012, FRONT - 0.011, 0.0042)] },\n  )\n  // the lens window on the face, the beam height inside it\n  const lens = g.extrude(rrect(-0.017, 0.062, 0.017, 0.114, 0.004), FRONT, FRONT + 0.0008, { bevel: 0.0003 })\n  // the top cap, stopping short of the face, and the sensitivity pot in it\n  const cap = g.bevelBox([2 * X, 0.005, FRONT - 0.004 - BACK], [0, Y1 + 0.0025, (BACK + FRONT - 0.004) / 2], 0.001, ['y-'])\n  const pot = g.lathe([[0, 0], [0.0055, 0], [0.0055, 0.0038], [0.0047, 0.0045], [0, 0.0045]], { axis: 'y', center: [0, Y1 + 0.005, -0.012], segments: 20 })\n  const slot = g.box([0.008, 0.0008, 0.0012], [0, Y1 + 0.0096, -0.012])\n  // the M8 plug under the housing: a turned body and a hex coupling nut\n  const PZ = (BACK + CH + FRONT) / 2\n  const plug = g.lathe([[0, 0], [0.0048, 0], [0.0052, 0.0005], [0.0052, 0.009], [0.0056, 0.009], [0.0056, 0.019], [0.0068, 0.022], [0.0068, Y0], [0, Y0]], { axis: 'y', center: [0, 0, PZ], segments: 20 })\n  const nut = g.lathe([[0, 0.009], [0.0072, 0.009], [0.0072, 0.018], [0, 0.018]], { axis: 'y', center: [0, 0, PZ], segments: 6, smooth: false })\n  // the bracket (PHOTOEYE_BRACKET): a side plate profiled round the rail's guard and lip, a toe bolted to its wall,\n  // and a hex bolt head through each of the housing's holes\n  const BT = PHOTOEYE_BRACKET.gauge, BW = PHOTOEYE_BRACKET.width\n  const U2Z = (u) => FRONT + 0.02 - u // this side: z falls as u grows\n  const HZ = FRONT - 0.011 // the housing's holes\n  const bracket = g.merge(\n    photoeyeSidePlate(g, X, Y1 - 0.002, PHOTOEYE_BRACKET.clearGuard, U2Z), photoeyeToe(g, X, U2Z), ...photoeyeToeBolts(g, X + BW * 0.62, U2Z),\n    photoeyeHex(g, 'x', [X + BT, Y0 + 0.012, HZ]), photoeyeHex(g, 'x', [X + BT, Y1 - 0.012, HZ]),\n  )\n  const both = { doubleSided: true }\n  return [\n    Object.assign({ desc: body, material: 'body' }, both),\n    Object.assign({ desc: lens, material: 'lens' }, both),\n    Object.assign({ desc: g.merge(cap, slot, plug, nut), material: 'black' }, both),\n    Object.assign({ desc: pot, material: 'pot' }, both),\n    Object.assign({ desc: bracket, material: 'steel' }, both),\n  ]\n}\n\nlet listText\nlet list = []\nfunction colorList(csv) {\n  if (csv === listText) return list\n  listText = csv\n  list = (csv || '').split(',').map((c) => c.trim().replace(/^#/, '')).filter((c) => /^[0-9a-f]{6}$/i.test(c)).map((h) => [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)))\n  return list\n}\n\n// The code of the listed colour nearest the tint: each channel within `tolerance` steps of 255, the closest by its\n// worst channel, the earlier entry on a tie. 0 when none is close enough.\nfunction classify(c, colors, tolerance) {\n  let code = 0\n  let best = Infinity\n  for (let i = 0; i < colors.length; i++) {\n    const k = colors[i]\n    const d = Math.max(Math.abs(c[0] * 255 - k[0]), Math.abs(c[1] * 255 - k[1]), Math.abs(c[2] * 255 - k[2]))\n    if (d <= tolerance && d < best) {\n      best = d\n      code = i + 1\n    }\n  }\n  return code\n}\n\ndefinePart({\n  lamps: ['led'],\n  params: {\n    maxRange: { type: 'number', default: 2, min: 0.1, max: 10, step: 0.05, label: 'Max range (m)', desc: 'How far down the beam a target is still read. The beam is cast along local +Z, so aim the sensor by rotating it.' },\n    showBeam: { type: 'boolean', default: true, label: 'Show beam', desc: 'Draw the beam line in the viewport. A viewing aid only - hiding it does not change what the sensor reads.' },\n    colors: { type: 'color', list: true, default: '#ff0000,#00ff00,#0000ff', label: 'Colors', desc: 'The colours this sensor tells apart. The colour code is the position in this list: 1 for the first, 2 for the second, and so on.' },\n    tolerance: { type: 'number', default: 80, min: 0, max: 255, step: 1, label: 'Match tolerance', desc: 'How far a tint may be from a listed colour and still match, in steps of 0 to 255 on each of red, green and blue. 0 matches only the exact colour. When two listed colours are within range, the closer one wins.' },\n    colorTag: { type: 'tag', values: [{ value: 0, label: 'none' }], dir: 'out', stType: 'INT', default: '', label: 'Color code tag', group: 'Comms', desc: 'Where the detected colour code is published: the position of the matched colour in Colors (1 = the first), or 0. It reads 0 both when nothing is in range and when no listed colour matches, so pair it with a presence sensor if the difference matters.' },\n  },\n  // The Photo Eye's housing, drawn: body, lens window, top cap + pot, M8 plug, and the mounting bracket.\n  geometry(g) {\n    return photoeyeHousing(g)\n  },\n  step(ctx) {\n    const s = ctx.sense('lens')\n    const present = s.hit && s.distance <= ctx.params.maxRange\n    const code = present ? classify(s.color, colorList(ctx.params.colors), ctx.params.tolerance) : 0\n    ctx.lamps.led = present\n    if (ctx.params.colorTag) ctx.writeNumber(ctx.params.colorTag, code)\n  },\n})\n",
+      "geometry": {
+        "kind": "rig",
+        "links": [
+          {
+            "name": "lens",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.1,
+              0.037
+            ],
+            "beam": {
+              "range": 10,
+              "rangeParam": "maxRange",
+              "showParam": "showBeam",
+              "tint": "hit"
+            }
+          },
+          {
+            "name": "led",
+            "shape": {
+              "kind": "box",
+              "size": [
+                0.014,
+                0.008,
+                0.012
+              ]
+            },
+            "offset": [
+              0,
+              0.124,
+              0.034
+            ],
+            "lamps": [
+              {
+                "emissive": [
+                  0.1,
+                  0.85,
+                  1
+                ]
+              }
+            ]
+          }
+        ],
+        "joints": [],
+        "bounds": {
+          "length": 0.045,
+          "width": 0.073,
+          "top": 0.16
+        }
+      },
+      "category": "Devices",
+      "snap": {
+        "mounts": [
+          {
+            "at": [
+              0,
+              0,
+              0.037
+            ],
+            "accepts": "conveyorGuard",
+            "face": "in",
+            "outwardOffset": 0.02,
+            "yOffset": 0.02,
+            "fitRangeParam": "maxRange"
+          }
+        ]
+      },
+      "materials": [
+        {
+          "id": "body",
+          "color": [
+            0,
+            0.13286832,
+            0.21404114
+          ],
+          "metalness": 0,
+          "roughness": 0.55
+        },
+        {
+          "id": "black",
+          "color": [
+            0.00232198,
+            0.00232198,
+            0.00232198
+          ],
+          "metalness": 0,
+          "roughness": 0.55
+        },
+        {
+          "id": "lens",
+          "color": [
+            0.17064494,
+            0,
+            0
+          ],
+          "metalness": 0,
+          "roughness": 0.55
+        },
+        {
+          "id": "pot",
+          "color": [
+            0.26327341,
+            0.26327341,
+            0.26327341
+          ],
+          "metalness": 0.3,
+          "roughness": 0.45
+        },
+        {
+          "id": "steel",
+          "color": [
+            0.47699978,
+            0.50707851,
+            0.53823552
+          ],
+          "metalness": 0.8,
+          "roughness": 0.38
+        }
+      ],
+      "sdk": {
+        "level": 12,
+        "of": "v2:12803:26w2lw9h6zr"
+      },
+      "origin": {
+        "app": "v2:12803:26w2lw9h6zr"
+      }
+    },
+    {
+      "format": 6,
+      "id": "oip.six-axis-robot",
+      "name": "Six-Axis Robot",
+      "params": {
+        "speed": {
+          "type": "number",
+          "default": 120,
+          "min": 5,
+          "max": 180,
+          "step": 1,
+          "label": "Joint speed (°/s)",
+          "group": "Motion",
+          "desc": "Top speed along the joint-space path. All six joints are driven from one path parameter, so they start and arrive together instead of the fastest one finishing early."
+        },
+        "accel": {
+          "type": "number",
+          "default": 720,
+          "min": 20,
+          "max": 2000,
+          "step": 10,
+          "label": "Joint accel (°/s²)",
+          "group": "Motion",
+          "desc": "How hard the arm ramps to and from the joint speed. Lower it for a heavier or more delicate payload; a short move may never reach top speed at all."
+        },
+        "scale": {
+          "type": "number",
+          "default": 1,
+          "min": 0.1,
+          "max": 10,
+          "step": 0.1,
+          "label": "Scale",
+          "desc": "Uniform size multiplier on the whole robot, applied to its collision bodies as well as its appearance - so a scaled arm really does reach further, rather than just looking bigger."
+        },
+        "toolSizeX": {
+          "type": "number",
+          "default": 0.5,
+          "min": 0.5,
+          "max": 3,
+          "step": 0.01,
+          "label": "Tool size X (m)",
+          "group": "EOAT",
+          "handle": {
+            "kind": "rigSize",
+            "link": "eoat",
+            "axis": "x",
+            "frameY": -0.075
+          },
+          "desc": "Length of the vacuum plate. The orange dots on the tool itself drag this in the viewport, and they ride the arm, so you can size the tool in whatever pose you are inspecting. Size it to the product you are picking - the plate is also the grab reach."
+        },
+        "toolSizeZ": {
+          "type": "number",
+          "default": 0.5,
+          "min": 0.5,
+          "max": 3,
+          "step": 0.01,
+          "label": "Tool size Z (m)",
+          "group": "EOAT",
+          "handle": {
+            "kind": "rigSize",
+            "link": "eoat",
+            "axis": "z",
+            "frameY": -0.075
+          },
+          "desc": "Width of the vacuum plate, dragged by the same orange dots on the tool."
+        },
+        "cupPitchX": {
+          "type": "number",
+          "default": 0.1,
+          "min": 0.01,
+          "max": 0.5,
+          "step": 0.005,
+          "label": "Cup pitch X (m)",
+          "group": "EOAT",
+          "desc": "Centre-to-centre spacing of the suction cups along the plate length. The plate fits as many as the pitch allows, so tightening it adds cups rather than moving them."
+        },
+        "cupPitchZ": {
+          "type": "number",
+          "default": 0.1,
+          "min": 0.01,
+          "max": 0.5,
+          "step": 0.005,
+          "label": "Cup pitch Z (m)",
+          "group": "EOAT",
+          "desc": "Centre-to-centre spacing of the suction cups across the plate width."
+        },
+        "cupMarginX": {
+          "type": "number",
+          "default": 0.05,
+          "min": 0,
+          "max": 0.5,
+          "step": 0.005,
+          "label": "Cup margin X (m)",
+          "group": "EOAT",
+          "desc": "Inset from each end of the plate before the first cup, so the grid does not run off the edge."
+        },
+        "cupMarginZ": {
+          "type": "number",
+          "default": 0.05,
+          "min": 0,
+          "max": 0.5,
+          "step": 0.005,
+          "label": "Cup margin Z (m)",
+          "group": "EOAT",
+          "desc": "Inset from each side of the plate before the first cup."
+        },
+        "cupsEnabled": {
+          "type": "boolean",
+          "default": true,
+          "label": "Suction cups",
+          "group": "EOAT",
+          "desc": "Draw the cup grid under the plate. Appearance only - the grip itself comes from the vacuum tag, not from the cups being visible."
+        },
+        "commandTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "INT",
+          "default": "",
+          "label": "Command tag (job number)",
+          "group": "Comms",
+          "desc": "Which job to run: 1 is the first job, 2 the second and so on. Set it BEFORE pulsing execute. A robot with no jobs takes a waypoint row here instead (0 is home). A number with no job or row behind it is ignored, and the arm stays put rather than guessing."
+        },
+        "executeTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Execute tag (rising edge runs it)",
+          "group": "Comms",
+          "desc": "Pulse this false-to-true to start the job. It is edge-triggered, so holding it true does NOT repeat - drop it and raise it again for each job."
+        },
+        "doneTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Done tag (true while idle)",
+          "group": "Comms",
+          "desc": "Handshake back to the program: true whenever the robot is ready for the next command. A job that ends on a Blend move reports done as it rounds that corner, so the next job can carry straight on. Wait for it before pulsing execute again, or the edge lands mid-job and is dropped."
+        },
+        "enableTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "onlyWhenDriven": true,
+          "default": "",
+          "label": "Enable tag",
+          "group": "Comms",
+          "desc": "The robot moves only while this is true. Drop it and the arm brakes to a stop where it is and the job holds, timers and all; raise it and the job carries on. Wire it to the cell being safe to work in. Until a program drives it, or with it empty, the robot is always enabled, so a merely-typed tag does not hold it."
+        },
+        "gripperTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Vacuum tag",
+          "group": "Comms",
+          "desc": "For a robot with no jobs: grip or release the load, read continuously, so hold it true for the whole carry. A robot with jobs switches its own vacuum with Vacuum steps and ignores this."
+        },
+        "in1Tag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Input 1 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job can wait on (a Wait for step). Robots have banks of these; wire the ones your jobs use."
+        },
+        "in2Tag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Input 2 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job can wait on (a Wait for step)."
+        },
+        "in3Tag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Input 3 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job can wait on (a Wait for step)."
+        },
+        "in4Tag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Input 4 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job can wait on (a Wait for step)."
+        },
+        "out1Tag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Output 1 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job switches (a Set step), to tell the program where it has got to. It holds its last value between jobs."
+        },
+        "out2Tag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Output 2 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job switches (a Set step)."
+        },
+        "out3Tag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Output 3 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job switches (a Set step)."
+        },
+        "out4Tag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Output 4 tag",
+          "group": "Comms/Robot signals",
+          "desc": "A signal a job switches (a Set step)."
+        },
+        "waypoints": {
+          "type": "numberList",
+          "columns": [
+            "J1 °",
+            "J2 °",
+            "J3 °",
+            "J4 °",
+            "J5 °",
+            "J6 °"
+          ],
+          "arity": 6,
+          "default": [
+            [
+              0,
+              -45,
+              90,
+              25,
+              75,
+              0
+            ],
+            [
+              0,
+              -15,
+              55,
+              0,
+              80,
+              0
+            ],
+            [
+              110,
+              -15,
+              55,
+              0,
+              80,
+              0
+            ]
+          ],
+          "rowNames": "waypointNames",
+          "label": "Waypoints",
+          "group": "Motion",
+          "desc": "The poses this robot knows, one row of six JOINT angles each - not a position in space, so the arm reaches a pose exactly as taught with no ambiguity about elbow or wrist. Name them, and jobs move to them by name. Pose the arm with the viewport gizmo and use Capture Pose to add one rather than typing angles."
+        },
+        "waypointNames": {
+          "type": "string",
+          "default": "Home\nPick\nPlace",
+          "hidden": true,
+          "label": "Waypoint names"
+        },
+        "blendWaypoints": {
+          "type": "numberList",
+          "rowsOf": "waypoints",
+          "arity": 1,
+          "default": [],
+          "label": "Pass-through waypoints (robots without jobs)",
+          "group": "Motion",
+          "desc": "For a robot with no jobs: which waypoints are VIA points. The arm reports done before it reaches one, so the next move can start while it is still running and the corner is rounded instead of braked to a stop. Jobs say this on each Move step instead."
+        },
+        "blendDeg": {
+          "type": "number",
+          "unit": "°",
+          "default": 12,
+          "min": 0,
+          "max": 60,
+          "step": 1,
+          "label": "Corner blend",
+          "group": "Motion",
+          "desc": "How many joint degrees before a via point the arm starts cutting the corner. Larger rounds the path more and strays further from the taught pose; the arm caps it at a third of the move."
+        },
+        "jobs": {
+          "type": "numberList",
+          "arity": 4,
+          "default": [],
+          "program": {
+            "names": "jobNames",
+            "ops": [
+              {
+                "code": 1,
+                "label": "Move",
+                "desc": "Move the arm to a waypoint. Stop arrives exactly and stands still; Blend rounds the corner and carries on into the next move, for poses that are only on the way somewhere.",
+                "args": [
+                  {
+                    "kind": "row",
+                    "of": "waypoints",
+                    "label": "To"
+                  },
+                  {
+                    "kind": "choice",
+                    "label": "Corner",
+                    "options": [
+                      {
+                        "value": 0,
+                        "label": "Stop"
+                      },
+                      {
+                        "value": 1,
+                        "label": "Blend"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "code": 2,
+                "label": "Vacuum",
+                "desc": "Switch the tool vacuum. The load is held from the step it goes on to the step it goes off.",
+                "args": [
+                  {
+                    "kind": "choice",
+                    "options": [
+                      {
+                        "value": 1,
+                        "label": "On"
+                      },
+                      {
+                        "value": 0,
+                        "label": "Off"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "code": 3,
+                "label": "Wait",
+                "desc": "Stand still for a time, to let a grip seal or a load settle. The clock stops while the robot is not enabled.",
+                "args": [
+                  {
+                    "kind": "number",
+                    "unit": "s",
+                    "min": 0,
+                    "step": 0.1,
+                    "default": 0.5
+                  }
+                ]
+              },
+              {
+                "code": 4,
+                "label": "Wait for",
+                "desc": "Hold here until one of the robot inputs reads on (or off). This is how a job waits on the cell: a pallet in place, a zone clear.",
+                "args": [
+                  {
+                    "kind": "choice",
+                    "options": [
+                      {
+                        "value": 0,
+                        "label": "Input 1",
+                        "param": "in1Tag"
+                      },
+                      {
+                        "value": 1,
+                        "label": "Input 2",
+                        "param": "in2Tag"
+                      },
+                      {
+                        "value": 2,
+                        "label": "Input 3",
+                        "param": "in3Tag"
+                      },
+                      {
+                        "value": 3,
+                        "label": "Input 4",
+                        "param": "in4Tag"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "choice",
+                    "options": [
+                      {
+                        "value": 1,
+                        "label": "On"
+                      },
+                      {
+                        "value": 0,
+                        "label": "Off"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "code": 5,
+                "label": "Set",
+                "desc": "Switch one of the robot outputs, to tell the PLC something the job has reached: clear of the table, load released.",
+                "args": [
+                  {
+                    "kind": "choice",
+                    "options": [
+                      {
+                        "value": 0,
+                        "label": "Output 1",
+                        "param": "out1Tag"
+                      },
+                      {
+                        "value": 1,
+                        "label": "Output 2",
+                        "param": "out2Tag"
+                      },
+                      {
+                        "value": 2,
+                        "label": "Output 3",
+                        "param": "out3Tag"
+                      },
+                      {
+                        "value": 3,
+                        "label": "Output 4",
+                        "param": "out4Tag"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "choice",
+                    "options": [
+                      {
+                        "value": 1,
+                        "label": "On"
+                      },
+                      {
+                        "value": 0,
+                        "label": "Off"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "label": "Jobs",
+          "desc": "The robot's own programs. The PLC runs one by number (the command tag) and the robot does the whole thing: moves, vacuum, waits, and the signals it sends back. While the scene runs, the step being run is highlighted."
+        },
+        "jobNames": {
+          "type": "string",
+          "default": "",
+          "hidden": true,
+          "label": "Job names"
+        },
+        "pose": {
+          "type": "numberList",
+          "rows": 1,
+          "columns": [
+            "J1 °",
+            "J2 °",
+            "J3 °",
+            "J4 °",
+            "J5 °",
+            "J6 °"
+          ],
+          "arity": 6,
+          "default": [
+            [
+              0,
+              -45,
+              90,
+              25,
+              75,
+              0
+            ]
+          ],
+          "label": "Idle pose",
+          "group": "Start state",
+          "desc": "The pose a freshly placed robot rests in, and where one waiting for its first Execute sits. It is the arm you see in a stopped scene, so set it to something that reads as parked rather than mid-cycle."
+        }
+      },
+      "behavior": "// Six-Axis robot — a pick-and-place arm, driven the way a real robot cell's PLC drives one. The robot owns its\n// JOBS: short programs of steps (move to a waypoint, vacuum on or off, wait, wait for an input, set an output) that\n// the author teaches in the Inspector. The PLC picks a job by number on the command tag, raises Execute, and waits\n// for Done; the robot runs the whole job itself, and signals back on its outputs. Because the robot knows its next\n// point, it blends through via points with no dependence on scan timing.\n//\n// A robot with NO jobs falls back to single moves: the command is a waypoint row, Execute moves there, the vacuum\n// tag drives the gripper. With no tags named the arm holds its authored idle pose and does nothing. Like a real\n// robot, it moves only when commanded.\n//\n// The kinematics are a rig: a tree of transform-only 'frame' links (the joint pivots) carrying per-node 'mesh'\n// links (the GLB linkages, geometry-only + placed by the rig), all wearing one shared ORM material built from the\n// BaseColor + ORM textures. The tool is drawn by geometry() on the 'eoat' frame.\n//\n// This is the part's source. `npm run build-parts` writes behavior.ts (this script as the app ships it, with the\n// _shared/ modules it imports joined in and `manifest` / `rig()` left out) and rig.json (the manifest, with the\n// rig compiled from rig()).\n\nconst D2R = Math.PI / 180\nconst Y = [0, 1, 0]\nconst Z = [0, 0, 1]\n// The joints, with their travel limits in degrees; the names are the ctx.joints bag's\nconst JOINTS = [\n  { name: 'j1', link: 'basePivot', axis: Y, min: -180, max: 180 },\n  { name: 'j2', link: 'upperArm', axis: Z, min: -135, max: 135 },\n  { name: 'j3', link: 'forearm', axis: Z, min: -160, max: 160 },\n  { name: 'j4', link: 'wristRot', axis: Y, min: -180, max: 180 },\n  { name: 'j5', link: 'wristPitch', axis: Z, min: -120, max: 120 },\n  { name: 'j6', link: 'tool', axis: Y, min: -360, max: 360 },\n]\nconst JOINT_MIN = JOINTS.map((j) => j.min)\nconst JOINT_MAX = JOINTS.map((j) => j.max)\n\n// Shortest-angle path: the landing angle nearest `from` that is congruent to `to` (mod 360°) —\n// so a 350° J6 command turns −10°, not the long way round.\nconst shortestPath = (from, to) => {\n  let diff = ((to - from + 180) % 360) - 180\n  if (diff < -180) diff += 360\n  return from + diff\n}\n// Overridden from the Inspector by the 'waypoints' param (its numberList grid, or captured by the editor's rig\n// gizmo), which arrives already parsed + validated as number[][] — no JSON.parse, no try/catch, no fallback.\nconst DEFAULT_POSES = [\n  [0, -45, 90, 25, 75, 0],   // 0 home\n  [0, -15, 55, 0, 80, 0],    // 1 pick (reach down)\n  [110, -15, 55, 0, 80, 0],  // 2 place (swing over)\n]\nconst POSE_COLUMNS = ['J1 °', 'J2 °', 'J3 °', 'J4 °', 'J5 °', 'J6 °']\n\n// The job step vocabulary. A step is the row [job, op, a, b]; the Inspector writes them from this declaration.\nconst MOVE = 1\nconst VACUUM = 2\nconst WAIT = 3\nconst WAIT_FOR = 4\nconst SET_OUT = 5\nconst IO_COUNT = 4\nconst ON_OFF = [{ value: 1, label: 'On' }, { value: 0, label: 'Off' }]\nconst ioOptions = (word, prefix) => Array.from({ length: IO_COUNT }, (_, i) => ({ value: i, label: word + ' ' + (i + 1), param: prefix + (i + 1) + 'Tag' }))\nconst JOB_OPS = [\n  { code: MOVE, label: 'Move', desc: 'Move the arm to a waypoint. Stop arrives exactly and stands still; Blend rounds the corner and carries on into the next move, for poses that are only on the way somewhere.', args: [{ kind: 'row', of: 'waypoints', label: 'To' }, { kind: 'choice', label: 'Corner', options: [{ value: 0, label: 'Stop' }, { value: 1, label: 'Blend' }] }] },\n  { code: VACUUM, label: 'Vacuum', desc: 'Switch the tool vacuum. The load is held from the step it goes on to the step it goes off.', args: [{ kind: 'choice', options: ON_OFF }] },\n  { code: WAIT, label: 'Wait', desc: 'Stand still for a time, to let a grip seal or a load settle. The clock stops while the robot is not enabled.', args: [{ kind: 'number', unit: 's', min: 0, step: 0.1, default: 0.5 }] },\n  { code: WAIT_FOR, label: 'Wait for', desc: 'Hold here until one of the robot inputs reads on (or off). This is how a job waits on the cell: a pallet in place, a zone clear.', args: [{ kind: 'choice', options: ioOptions('Input', 'in') }, { kind: 'choice', options: ON_OFF }] },\n  { code: SET_OUT, label: 'Set', desc: 'Switch one of the robot outputs, to tell the PLC something the job has reached: clear of the table, load released.', args: [{ kind: 'choice', options: ioOptions('Output', 'out') }, { kind: 'choice', options: ON_OFF }] },\n]\nconst splitNames = (s) => (typeof s === 'string' && s !== '' ? s.split('\\n') : [])\n// how many jobs there are: every one a step belongs to, and every one that has a name\nconst jobCount = (rows, names) => rows.reduce((n, r) => Math.max(n, r[0] + 1), splitNames(names).length)\n\nlet cur = DEFAULT_POSES[0].slice() // current joint angles (deg)\nlet moving = false\nlet gripClosed = false\nconst outputs = [false, false, false, false]\n// One move: its start pose, signed per-joint deltas, the dominant-joint distance (deg), progress along it and\n// the path speed (deg/s). One scalar drives all six joints (coordinated, never per-joint jitter), so they\n// start and arrive together.\nconst segment = (start) => ({ from: start.slice(), span: [0, 0, 0, 0, 0, 0], len: 0, prog: 0, vel: 0 })\nlet seg = segment(DEFAULT_POSES[0])\n// Moves still finishing UNDER the active one: a via-point move that handed off early runs on to its own stop\n// while the next move ramps up from that pose, and the arm is placed at the sum of the two (see step).\nlet tails = []\n// Trapezoidal profile of one move: accel-limited, capped at vMax, and always able to brake to a stop at its end.\n// vStop is that braking limit counted in whole ticks: the continuous sqrt(2·a·remain) ignores the distance the tick\n// itself covers, so the arm reached the pose still moving and stopped dead on the last tick (about 4x accel).\nconst advance = (s, vMax, accel, dt, approach) => {\n  const h = (accel * dt) / 2\n  const vStop = Math.sqrt(h * h + 2 * accel * Math.max(s.len - s.prog, 0)) - h\n  s.vel = approach(s.vel, Math.min(vMax, vStop), accel * dt)\n  s.prog += s.vel * dt\n  if (s.prog >= s.len) { s.prog = s.len; s.vel = 0 }\n}\nconst fraction = (s) => (s.len > 1e-6 ? s.prog / s.len : 1)\n// Start a move to `tgt`, planned from where the previous move ENDS, not from where the arm is: if that move is\n// still running it becomes a tail, and covers the difference.\nconst startMove = (tgt) => {\n  if (seg.prog < seg.len) tails.push(seg)\n  const start = seg.from.map((f, i) => f + seg.span[i])\n  seg = segment(start)\n  for (let i = 0; i < 6; i++) {\n    // shortest-angle wrap, but only when that landing angle stays inside the joint's limits; otherwise the\n    // raw target, clamped to the limits: the host clamps the drawn joint anyway, so planning past a limit\n    // would leave the arm pinned there while the move timed out travel it cannot make.\n    const wrapped = shortestPath(start[i], tgt[i])\n    const goal = wrapped >= JOINT_MIN[i] && wrapped <= JOINT_MAX[i] ? wrapped : Math.min(Math.max(tgt[i], JOINT_MIN[i]), JOINT_MAX[i])\n    seg.span[i] = goal - start[i]\n    seg.len = Math.max(seg.len, Math.abs(seg.span[i]))\n  }\n}\n// A move is over at a via point once it is within the blend window of it, and at a stop once everything is still.\n// The window is capped at a THIRD of the move. On a via-point move SHORTER than blendDeg, 'remain <= blendDeg' is\n// already true on its first tick, so uncapped the part would report done the moment MIN_MOVE_SEC is up. When the\n// next move started from wherever the arm was, that skipped the via-point outright: the demo palletizer's 5.7 deg\n// lift out of the pick handed off 143 mm low and carried the layer through the top course of the stack. The\n// overlapping tail now flies the rest of the lift either way, so the cap only keeps a short leg's corner from\n// starting before the leg has properly begun.\nconst moveOver = (via, blendDeg) => {\n  const remain = seg.len - seg.prog\n  return via ? remain <= Math.min(blendDeg, seg.len / 3) : remain <= 0 && tails.length === 0\n}\n\n// Single-move mode (no jobs): the waypoint being moved to.\nlet target = 0\n// Job mode: the job running (-1 = none), its steps (rows of the jobs table, with their row index), which step is\n// next, whether that step has started, and the seconds a Wait has left.\nlet job = -1\nlet steps = []\nlet pc = 0\nlet started = false\nlet waitLeft = 0\n// A commanded move or job reports busy for at least this long, so even a degenerate one shows the PLC a real busy\n// window and the Execute/Done handshake can't miss it at any scan rate.\nconst MIN_MOVE_SEC = 0.1\nlet busySec = 0 // seconds since the active command was accepted\n\n// Run the active job's steps, as far as this tick allows. Instant steps (vacuum, set) chain on in the same tick; a\n// move, a wait or a wait-for holds the job until it is done. An enabled check is the caller's.\nfunction runJob(ctx, POSES) {\n  for (let guard = 0; guard < 64 && pc < steps.length; guard++) {\n    const [, op, a, b] = steps[pc].values\n    if (op === MOVE) {\n      if (!started) {\n        const pose = POSES[a]\n        // a step whose waypoint is gone ends the job there: the arm stays put rather than guessing a pose\n        if (!Number.isInteger(a) || !pose) { pc = steps.length; return }\n        startMove(pose)\n        started = true\n      }\n      if (!moveOver(b === 1, ctx.params.blendDeg)) return\n    } else if (op === VACUUM) {\n      gripClosed = a === 1\n    } else if (op === WAIT) {\n      if (!started) { waitLeft = a; started = true }\n      if (waitLeft > 1e-9) return\n    } else if (op === WAIT_FOR) {\n      const tag = ctx.params['in' + (a + 1) + 'Tag']\n      if ((tag ? ctx.readTag(tag) : false) !== (b === 1)) return\n    } else if (op === SET_OUT) {\n      if (a >= 0 && a < IO_COUNT) outputs[a] = b === 1\n    }\n    pc++\n    started = false\n  }\n}\n\ndefinePart({\n  joints: ['j1', 'j2', 'j3', 'j4', 'j5', 'j6'],\n  grippers: ['gripper'],\n  lamps: ['vacuumLamp'],\n  params: {\n    speed: { type: 'number', default: 120, min: 5, max: 180, step: 1, label: 'Joint speed (°/s)', group: 'Motion', desc: 'Top speed along the joint-space path. All six joints are driven from one path parameter, so they start and arrive together instead of the fastest one finishing early.' },\n    accel: { type: 'number', default: 720, min: 20, max: 2000, step: 10, label: 'Joint accel (°/s²)', group: 'Motion', desc: 'How hard the arm ramps to and from the joint speed. Lower it for a heavier or more delicate payload; a short move may never reach top speed at all.' },\n    scale: { type: 'number', default: 1, min: 0.1, max: 10, step: 0.1, label: 'Scale', desc: 'Uniform size multiplier on the whole robot, applied to its collision bodies as well as its appearance - so a scaled arm really does reach further, rather than just looking bigger.' },\n    // EOAT (end-of-arm tooling): read by geometry() and the grab zone, never by step(). The orange rigSize dots resize it.\n    toolSizeX: { type: 'number', default: 0.5, min: 0.5, max: 3, step: 0.01, label: 'Tool size X (m)', group: 'EOAT', handle: { kind: 'rigSize', link: 'eoat', axis: 'x', frameY: -0.075 }, desc: 'Length of the vacuum plate. The orange dots on the tool itself drag this in the viewport, and they ride the arm, so you can size the tool in whatever pose you are inspecting. Size it to the product you are picking - the plate is also the grab reach.' },\n    toolSizeZ: { type: 'number', default: 0.5, min: 0.5, max: 3, step: 0.01, label: 'Tool size Z (m)', group: 'EOAT', handle: { kind: 'rigSize', link: 'eoat', axis: 'z', frameY: -0.075 }, desc: 'Width of the vacuum plate, dragged by the same orange dots on the tool.' },\n    cupPitchX: { type: 'number', default: 0.1, min: 0.01, max: 0.5, step: 0.005, label: 'Cup pitch X (m)', group: 'EOAT', desc: 'Centre-to-centre spacing of the suction cups along the plate length. The plate fits as many as the pitch allows, so tightening it adds cups rather than moving them.' },\n    cupPitchZ: { type: 'number', default: 0.1, min: 0.01, max: 0.5, step: 0.005, label: 'Cup pitch Z (m)', group: 'EOAT', desc: 'Centre-to-centre spacing of the suction cups across the plate width.' },\n    cupMarginX: { type: 'number', default: 0.05, min: 0, max: 0.5, step: 0.005, label: 'Cup margin X (m)', group: 'EOAT', desc: 'Inset from each end of the plate before the first cup, so the grid does not run off the edge.' },\n    cupMarginZ: { type: 'number', default: 0.05, min: 0, max: 0.5, step: 0.005, label: 'Cup margin Z (m)', group: 'EOAT', desc: 'Inset from each side of the plate before the first cup.' },\n    cupsEnabled: { type: 'boolean', default: true, label: 'Suction cups', group: 'EOAT', desc: 'Draw the cup grid under the plate. Appearance only - the grip itself comes from the vacuum tag, not from the cups being visible.' },\n    commandTag: { type: 'tag', dir: 'in', stType: 'INT', default: '', label: 'Command tag (job number)', group: 'Comms', desc: 'Which job to run: 1 is the first job, 2 the second and so on. Set it BEFORE pulsing execute. A robot with no jobs takes a waypoint row here instead (0 is home). A number with no job or row behind it is ignored, and the arm stays put rather than guessing.' },\n    executeTag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Execute tag (rising edge runs it)', group: 'Comms', desc: 'Pulse this false-to-true to start the job. It is edge-triggered, so holding it true does NOT repeat - drop it and raise it again for each job.' },\n    doneTag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Done tag (true while idle)', group: 'Comms', desc: 'Handshake back to the program: true whenever the robot is ready for the next command. A job that ends on a Blend move reports done as it rounds that corner, so the next job can carry straight on. Wait for it before pulsing execute again, or the edge lands mid-job and is dropped.' },\n    enableTag: { type: 'tag', dir: 'in', stType: 'BOOL', onlyWhenDriven: true, default: '', label: 'Enable tag', group: 'Comms', desc: 'The robot moves only while this is true. Drop it and the arm brakes to a stop where it is and the job holds, timers and all; raise it and the job carries on. Wire it to the cell being safe to work in. Until a program drives it, or with it empty, the robot is always enabled, so a merely-typed tag does not hold it.' },\n    gripperTag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Vacuum tag', group: 'Comms', desc: 'For a robot with no jobs: grip or release the load, read continuously, so hold it true for the whole carry. A robot with jobs switches its own vacuum with Vacuum steps and ignores this.' },\n    in1Tag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Input 1 tag', group: 'Comms/Robot signals', desc: 'A signal a job can wait on (a Wait for step). Robots have banks of these; wire the ones your jobs use.' },\n    in2Tag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Input 2 tag', group: 'Comms/Robot signals', desc: 'A signal a job can wait on (a Wait for step).' },\n    in3Tag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Input 3 tag', group: 'Comms/Robot signals', desc: 'A signal a job can wait on (a Wait for step).' },\n    in4Tag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Input 4 tag', group: 'Comms/Robot signals', desc: 'A signal a job can wait on (a Wait for step).' },\n    out1Tag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Output 1 tag', group: 'Comms/Robot signals', desc: 'A signal a job switches (a Set step), to tell the program where it has got to. It holds its last value between jobs.' },\n    out2Tag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Output 2 tag', group: 'Comms/Robot signals', desc: 'A signal a job switches (a Set step).' },\n    out3Tag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Output 3 tag', group: 'Comms/Robot signals', desc: 'A signal a job switches (a Set step).' },\n    out4Tag: { type: 'tag', dir: 'out', stType: 'BOOL', default: '', label: 'Output 4 tag', group: 'Comms/Robot signals', desc: 'A signal a job switches (a Set step).' },\n    waypoints: { type: 'numberList', columns: POSE_COLUMNS, arity: 6, default: DEFAULT_POSES, rowNames: 'waypointNames', label: 'Waypoints', group: 'Motion', desc: 'The poses this robot knows, one row of six JOINT angles each - not a position in space, so the arm reaches a pose exactly as taught with no ambiguity about elbow or wrist. Name them, and jobs move to them by name. Pose the arm with the viewport gizmo and use Capture Pose to add one rather than typing angles.' },\n    waypointNames: { type: 'string', default: 'Home\\nPick\\nPlace', hidden: true, label: 'Waypoint names' },\n    blendWaypoints: { type: 'numberList', rowsOf: 'waypoints', arity: 1, default: [], label: 'Pass-through waypoints (robots without jobs)', group: 'Motion', desc: 'For a robot with no jobs: which waypoints are VIA points. The arm reports done before it reaches one, so the next move can start while it is still running and the corner is rounded instead of braked to a stop. Jobs say this on each Move step instead.' },\n    blendDeg: { type: 'number', unit: '°', default: 12, min: 0, max: 60, step: 1, label: 'Corner blend', group: 'Motion', desc: 'How many joint degrees before a via point the arm starts cutting the corner. Larger rounds the path more and strays further from the taught pose; the arm caps it at a third of the move.' },\n    jobs: { type: 'numberList', arity: 4, default: [], program: { names: 'jobNames', ops: JOB_OPS }, label: 'Jobs', desc: 'The robot\\'s own programs. The PLC runs one by number (the command tag) and the robot does the whole thing: moves, vacuum, waits, and the signals it sends back. While the scene runs, the step being run is highlighted.' },\n    jobNames: { type: 'string', default: '', hidden: true, label: 'Job names' },\n    pose: { type: 'numberList', rows: 1, columns: POSE_COLUMNS, arity: 6, default: [DEFAULT_POSES[0]], label: 'Idle pose', group: 'Start state', desc: 'The pose a freshly placed robot rests in, and where one waiting for its first Execute sits. It is the arm you see in a stopped scene, so set it to something that reads as parked rather than mid-cycle.' },\n  },\n  // The tool, in the eoat frame (+Y toward the wrist, the cups hanging toward -Y). Its numbers are the tool model\n  // this replaced: plate back face -0.0517 and front face -0.101, rails 59 mm deep centred on -0.075 with their outer\n  // faces 3 mm outside ±size/2, cups mounted at -0.1035 and 53 mm tall, the adapter 192 x 318 mm reaching -0.013\n  // toward the flange. The cup grid is the host's `grid` array rule (count = floor(usable / pitch) + 1 per axis,\n  // spread edge to edge across ±usable/2, thinned to 256 cups by spreading the longer axis), so a bed laid by either\n  // reads the same. The cups are one turned bellows cup drawn at every grid point; they compress ~15% about the rim\n  // while the vacuum holds, so the lip stays seated on the load and the bellows fold up into the mount. The vacuum\n  // LED is the grip tell (vacuumLamp): a round lens in a black bezel, flush on the plate's back face, riding the\n  // +X/+Z corner so it tracks the plate as the tool resizes.\n  geometry(g, p) {\n    const hx = p.toolSizeX / 2\n    const hz = p.toolSizeZ / 2\n    const RAIL_Y = -0.075 // rail centreline\n    const RAIL_H = 0.059 // rail depth, back to front\n    const RAIL_OUT = 0.003 // rail face, outside the plate edge\n    const RAIL_W = 0.015 // rail width\n    const CAP = 0.019 // corner cap, square in plan\n    const out = []\n    // plate and corner caps\n    const paint = [g.box([2 * (hx - RAIL_W + RAIL_OUT) + 0.002, 0.0493, 2 * (hz - RAIL_W + RAIL_OUT) + 0.002], [0, -0.07635, 0])]\n    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {\n      paint.push(g.bevelBox([CAP, RAIL_H + 0.004, CAP], [sx * (hx + RAIL_OUT - CAP / 2 + 0.002), RAIL_Y, sz * (hz + RAIL_OUT - CAP / 2 + 0.002)], 0.002))\n    }\n    out.push({ desc: g.merge(...paint), material: 'eoatPaint', link: 'eoat' })\n    // rails: a slotted extrusion between the caps\n    const section = (edge) => {\n      const o = edge + RAIL_OUT\n      const i = o - RAIL_W\n      const y0 = RAIL_Y - RAIL_H / 2\n      const y1 = RAIL_Y + RAIL_H / 2\n      const pts = [[i, y0], [o, y0]]\n      for (const gy of [-0.015, 0.015]) pts.push([o, RAIL_Y + gy - 0.003], [o - 0.003, RAIL_Y + gy - 0.003], [o - 0.003, RAIL_Y + gy + 0.003], [o, RAIL_Y + gy + 0.003])\n      pts.push([o, y1], [i, y1])\n      return pts\n    }\n    const mirror = (pts) => pts.map((q) => [-q[0], q[1]])\n    const runZ = hz + RAIL_OUT - CAP + 0.002 // to the cap\n    const runX = hx + RAIL_OUT - CAP + 0.002\n    const swap = (pts) => pts.map((q) => [q[1], q[0]]) // x-axis outline is (y, z)\n    out.push({\n      desc: g.merge(\n        g.extrude(section(hx), -runZ, runZ, { axis: 'z', bevel: 0.0008 }),\n        g.extrude(mirror(section(hx)), -runZ, runZ, { axis: 'z', bevel: 0.0008 }),\n        g.extrude(swap(section(hz)), -runX, runX, { axis: 'x', bevel: 0.0008 }),\n        g.extrude(swap(mirror(section(hz))), -runX, runX, { axis: 'x', bevel: 0.0008 }),\n      ),\n      material: 'eoatRail',\n      link: 'eoat',\n    })\n    // adapter: a plate and a turned boss up to the flange\n    const ADAPTER_TOP = -0.0397\n    out.push({\n      desc: g.merge(\n        g.bevelBox([0.192, 0.012, 0.318], [0, -0.0457, 0], 0.002, ['y-']),\n        g.lathe([[0, ADAPTER_TOP], [0.07, ADAPTER_TOP], [0.07, -0.025], [0.062, -0.021], [0.062, -0.013], [0, -0.013]], { segments: 40 }),\n      ),\n      material: 'eoatSteel',\n      link: 'eoat',\n    })\n    const bolts = []\n    for (const bx of [-0.078, 0.078]) for (const bz of [-0.14, 0, 0.14]) {\n      bolts.push(g.lathe([[0, ADAPTER_TOP], [0.008, ADAPTER_TOP], [0.008, ADAPTER_TOP + 0.005], [0, ADAPTER_TOP + 0.005]], { segments: 6, smooth: false, center: [bx, 0, bz] }))\n    }\n    out.push({ desc: g.merge(...bolts), finish: 'bolt', link: 'eoat' })\n    // vacuum LED, 0.07 m in from the +X/+Z corner\n    const BACK = -0.0517 // plate back face\n    const lx = hx - 0.07\n    const lz = hz - 0.07\n    out.push({ desc: g.lathe([[0, BACK], [0.0175, BACK], [0.0175, BACK + 0.005], [0.0155, BACK + 0.007], [0, BACK + 0.007]], { segments: 32, center: [lx, 0, lz] }), material: 'eoatPlastic', link: 'eoat' })\n    out.push({\n      desc: g.lathe([[0, BACK + 0.007], [0.0135, BACK + 0.007], [0.012, BACK + 0.0105], [0.007, BACK + 0.0128], [0, BACK + 0.0135]], { segments: 32, center: [lx, 0, lz] }),\n      material: 'eoatLens',\n      link: 'eoat',\n      lamps: [{ name: 'vacuumLamp', emissive: [0.15, 0.85, 0.2], offColor: [0.03, 0.06, 0.03] }],\n    })\n    // cup bed, squashed about the rims while the vacuum holds\n    if (p.cupsEnabled) {\n      const axis = (size, pitch, margin) => {\n        const usable = Math.max(size - Math.max(margin, 0) * 2, 0)\n        const n = Math.max(1, Math.min(64, Math.floor(usable / Math.max(pitch, 1e-4) + 1e-6) + 1))\n        if (n === 1) return [0]\n        const at = []\n        for (let k = 0; k < n; k++) at.push(-usable / 2 + (k * usable) / (n - 1))\n        return at\n      }\n      const cup = g.lathe([\n        [0, -0.0417], [0.0187, -0.0417], [0.0262, -0.047], [0.0286, -0.0532], [0.0328, -0.0532], [0.0338, -0.052],\n        [0.0336, -0.0506], [0.0328, -0.0495], [0.0213, -0.0374], [0.0246, -0.0358], [0.0245, -0.035], [0.0152, -0.0232],\n        [0.0112, -0.013], [0.0081, -0.0121], [0.0081, 0], [0, 0],\n      ], { segments: 20 })\n      // at most 256 cups, thinned as the host's grid is\n      const xs = axis(p.toolSizeX, p.cupPitchX, p.cupMarginX)\n      const zs = axis(p.toolSizeZ, p.cupPitchZ, p.cupMarginZ)\n      let nx = xs.length\n      let nz = zs.length\n      while (nx * nz > 256) {\n        if (nx >= nz) nx--\n        else nz--\n      }\n      const thin = (at, n) => (n === at.length ? at : n === 1 ? [0] : Array.from({ length: n }, (_, k) => at[0] + ((at[at.length - 1] - at[0]) * k) / (n - 1)))\n      const instances = []\n      for (const cx of thin(xs, nx)) for (const cz of thin(zs, nz)) instances.push({ position: [cx, -0.1035, cz] })\n      out.push({ desc: cup, material: 'eoatCup', link: 'eoat', instances, squash: { amount: 0.15, lamp: 'vacuumLamp' } })\n    }\n    return out\n  },\n  init(ctx) {\n    // Seed the arm at its authored idle pose (the 'pose' param) so a freshly placed robot, and one\n    // waiting for its first Execute, rests where the author trained it. Falls back to home if it is ill-shaped.\n    const p = ctx.params.pose\n    const idle = Array.isArray(p) && p.length > 0 && p[0].length === 6 ? p[0] : DEFAULT_POSES[0]\n    cur = idle.slice()\n    seg = segment(idle)\n  },\n  step(ctx) {\n    const P = ctx.params\n    const POSES = P.waypoints.length ? P.waypoints : DEFAULT_POSES\n    const jobs = jobCount(P.jobs, P.jobNames)\n    const enabled = !ctx.tagDriven(P.enableTag) || ctx.readTag(P.enableTag)\n    const dt = ctx.dt\n\n    // ctx.rising diffs the begin-of-tick snapshot, so an edge held over the async tag bus can't be lost.\n    if (ctx.rising(P.executeTag) && !moving) {\n      const cmd = Math.round(ctx.readNumber(P.commandTag))\n      // a command with nothing behind it ignores the edge: stay put, done stays true\n      if (jobs > 0 && cmd >= 1 && cmd <= jobs) {\n        job = cmd - 1\n        steps = []\n        P.jobs.forEach((values, row) => { if (values[0] === job) steps.push({ row, values }) })\n        pc = 0\n        started = false\n        moving = true\n        busySec = 0\n      } else if (jobs === 0 && cmd >= 0 && cmd < POSES.length) {\n        target = cmd\n        startMove(POSES[target])\n        moving = true\n        busySec = 0\n      }\n    }\n    if (jobs === 0) gripClosed = ctx.readTag(P.gripperTag)\n    if (job >= 0 && enabled) runJob(ctx, POSES)\n\n    // Coordinated trapezoidal motion, and corners blended by OVERLAP. Every move brakes to a stop at its own\n    // pose. At a via point the part reports done early (or a job moves on early), so the next move can start\n    // while this one is still running; when it does, the old move carries on into its stop as a tail and the\n    // new one ramps up from the via pose, and the arm sits at the sum of the two. Each joint's speed hands over\n    // from one move to the next instead of jumping, which is what rounds the corner. If nothing follows in\n    // time, nothing overlaps and the arm just stops at the via-point, as it would on a real controller.\n    //\n    // The tails' speeds come off the new move's cap, so no joint ever exceeds 'speed' through a blend: the new\n    // move gathers speed as the old one sheds it. Not enabled, every move brakes to a stop where it is.\n    const vMax = enabled ? P.speed : 0\n    let tailVel = 0\n    for (const t of tails) { advance(t, vMax, P.accel, dt, ctx.approach); tailVel += t.vel }\n    advance(seg, Math.max(vMax - tailVel, 0), P.accel, dt, ctx.approach)\n    const u = fraction(seg)\n    for (let i = 0; i < 6; i++) cur[i] = seg.from[i] + seg.span[i] * u\n    for (const t of tails) {\n      const tu = fraction(t)\n      for (let i = 0; i < 6; i++) cur[i] += t.span[i] * (tu - 1)\n    }\n    tails = tails.filter((t) => t.prog < t.len)\n\n    if (moving) busySec += dt\n    if (enabled && job >= 0) waitLeft -= dt\n\n    // Done once the job has run its last step (a job ending on a pass-through move hands off as it rounds it),\n    // or the single move is over. The MIN_MOVE_SEC floor keeps one that would finish inside a PLC scan visible.\n    const over = job >= 0 ? pc >= steps.length : moveOver(P.blendWaypoints.some((r) => r[0] === target), P.blendDeg)\n    if (moving && over && busySec >= MIN_MOVE_SEC) {\n      moving = false\n      job = -1\n    }\n\n    ctx.joints.j1 = cur[0] * D2R\n    ctx.joints.j2 = cur[1] * D2R\n    ctx.joints.j3 = cur[2] * D2R\n    ctx.joints.j4 = cur[3] * D2R\n    ctx.joints.j5 = cur[4] * D2R\n    ctx.joints.j6 = cur[5] * D2R\n    ctx.grips.gripper = gripClosed\n    ctx.lamps.vacuumLamp = gripClosed // the cups compress off this same signal\n    if (P.doneTag) ctx.writeTag(P.doneTag, !moving)\n    for (let i = 0; i < IO_COUNT; i++) {\n      const tag = P['out' + (i + 1) + 'Tag']\n      if (tag) ctx.writeTag(tag, outputs[i])\n    }\n    // the job row being run, for the Inspector to highlight (-1 = none)\n    ctx.report('jobs', job >= 0 && pc < steps.length ? steps[pc].row : -1)\n  },\n})\n",
+      "geometry": {
+        "kind": "rig",
+        "links": [
+          {
+            "name": "base",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Base",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "quat": [
+              0,
+              -0.7071068,
+              0,
+              0.70710677
+            ]
+          },
+          {
+            "name": "basePivot",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "name": "linkage1",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Linkage_01",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0.23,
+              0
+            ],
+            "parent": "basePivot",
+            "quat": [
+              0,
+              -0.7071068,
+              0,
+              0.70710677
+            ]
+          },
+          {
+            "name": "hydBaseAnchor",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0.31569114,
+              0.5505995,
+              -0.22799234
+            ],
+            "parent": "basePivot",
+            "quat": [
+              0.05364445,
+              -0.70634111,
+              0.0538397,
+              0.70377966
+            ],
+            "aim": {
+              "target": "hydRodAnchor"
+            }
+          },
+          {
+            "name": "hyd1",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Hydraulic_01",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "hydBaseAnchor"
+          },
+          {
+            "name": "shoulder",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.9,
+              0
+            ],
+            "parent": "basePivot"
+          },
+          {
+            "name": "upperArm",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              -0.72657037,
+              -0.34717786,
+              -0.00242546
+            ],
+            "parent": "shoulder"
+          },
+          {
+            "name": "linkage2",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Linkage_02",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "upperArm",
+            "quat": [
+              -0.50000002,
+              -0.49999996,
+              -0.49999998,
+              0.50000004
+            ]
+          },
+          {
+            "name": "hydRodAnchor",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0.19884515,
+              0.00020599,
+              -0.228842
+            ],
+            "parent": "upperArm",
+            "quat": [
+              -0.32043198,
+              0.62891006,
+              0.31849341,
+              0.63273804
+            ],
+            "aim": {
+              "target": "hydBaseAnchor"
+            }
+          },
+          {
+            "name": "hyd2",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Hydraulic_02",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "hydRodAnchor"
+          },
+          {
+            "name": "elbow",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0.01472515,
+              1.3262625,
+              -0.00687705
+            ],
+            "parent": "upperArm"
+          },
+          {
+            "name": "forearm",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              -0.01825523,
+              0.01825523,
+              -0.09700517
+            ],
+            "parent": "elbow"
+          },
+          {
+            "name": "linkage3",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Linkage_03",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "forearm",
+            "quat": [
+              0.5,
+              0.5,
+              0.50000002,
+              -0.49999998
+            ]
+          },
+          {
+            "name": "wristRot",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0.11355525,
+              0.87549424,
+              0.09818761
+            ],
+            "parent": "forearm"
+          },
+          {
+            "name": "linkage4",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Linkage_04",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "wristRot",
+            "quat": [
+              0.5,
+              0.5,
+              0.50000002,
+              -0.49999998
+            ]
+          },
+          {
+            "name": "wristPitch",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.33123374,
+              0
+            ],
+            "parent": "wristRot"
+          },
+          {
+            "name": "linkage5",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Linkage_05",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0,
+              0
+            ],
+            "parent": "wristPitch",
+            "quat": [
+              0.50000001,
+              -0.50000001,
+              0.50000002,
+              0.49999996
+            ]
+          },
+          {
+            "name": "tool",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.21365428,
+              0
+            ],
+            "parent": "wristPitch"
+          },
+          {
+            "name": "toolSuction",
+            "shape": {
+              "kind": "mesh",
+              "asset": "glb",
+              "node": "Six-Axis_Tool_Suction",
+              "material": "sixaxis"
+            },
+            "offset": [
+              0,
+              0.02553463,
+              0
+            ],
+            "parent": "tool",
+            "quat": [
+              0.7071068,
+              -2e-08,
+              -1e-08,
+              0.70710677
+            ]
+          },
+          {
+            "name": "gripper",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.165672,
+              0
+            ],
+            "parent": "tool",
+            "grip": {
+              "zone": {
+                "size": [
+                  0.5,
+                  0.7,
+                  0.5
+                ],
+                "sizeParams": [
+                  {
+                    "axis": 0,
+                    "param": "toolSizeX",
+                    "scale": 1
+                  },
+                  {
+                    "axis": 2,
+                    "param": "toolSizeZ",
+                    "scale": 1
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "eoat",
+            "parent": "tool",
+            "shape": {
+              "kind": "frame"
+            },
+            "offset": [
+              0,
+              0.009,
+              0
+            ],
+            "quat": [
+              0,
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "joints": [
+          {
+            "name": "j1",
+            "link": "basePivot",
+            "type": "revolute",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "min": -3.14159265,
+            "max": 3.14159265
+          },
+          {
+            "name": "j2",
+            "link": "upperArm",
+            "type": "revolute",
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "min": -2.35619449,
+            "max": 2.35619449
+          },
+          {
+            "name": "j3",
+            "link": "forearm",
+            "type": "revolute",
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "min": -2.7925268,
+            "max": 2.7925268
+          },
+          {
+            "name": "j4",
+            "link": "wristRot",
+            "type": "revolute",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "min": -3.14159265,
+            "max": 3.14159265
+          },
+          {
+            "name": "j5",
+            "link": "wristPitch",
+            "type": "revolute",
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "min": -2.0943951,
+            "max": 2.0943951
+          },
+          {
+            "name": "j6",
+            "link": "tool",
+            "type": "revolute",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "min": -6.28318531,
+            "max": 6.28318531
+          }
+        ],
+        "bounds": {
+          "length": 1.88,
+          "width": 0.83,
+          "top": 3.49
+        },
+        "posable": true
+      },
+      "category": "Equipment",
+      "assets": [
+        {
+          "id": "glb",
+          "mime": "model/gltf-binary",
+          "url": "/part-assets/fff423a52e7f0509025d41e5a6925392bf9c0f79e7a6f57f8b6177495eb26911.glb",
+          "sha256": "fff423a52e7f0509025d41e5a6925392bf9c0f79e7a6f57f8b6177495eb26911"
+        },
+        {
+          "id": "albedo",
+          "mime": "image/webp",
+          "url": "/part-assets/8f2a6fcd746437eb44b66b25f91075c5e16b111ebecceac9f574cf6187d466d2.webp",
+          "sha256": "8f2a6fcd746437eb44b66b25f91075c5e16b111ebecceac9f574cf6187d466d2"
+        },
+        {
+          "id": "orm",
+          "mime": "image/webp",
+          "url": "/part-assets/4ff77a29d38486a765fbbc993e8f959063db6b32d985650f5e423d68be343ab1.webp",
+          "sha256": "4ff77a29d38486a765fbbc993e8f959063db6b32d985650f5e423d68be343ab1"
+        }
+      ],
+      "materials": [
+        {
+          "id": "sixaxis",
+          "albedo": "albedo",
+          "orm": "orm"
+        },
+        {
+          "id": "eoatPaint",
+          "color": [
+            0.639,
+            0.116,
+            0.0066
+          ],
+          "metalness": 0,
+          "roughness": 0.55
+        },
+        {
+          "id": "eoatRail",
+          "color": [
+            0.04,
+            0.04,
+            0.045
+          ],
+          "metalness": 0.7,
+          "roughness": 0.35
+        },
+        {
+          "id": "eoatSteel",
+          "color": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "metalness": 0.85,
+          "roughness": 0.45
+        },
+        {
+          "id": "eoatCup",
+          "color": [
+            0.024,
+            0.104,
+            0.4
+          ],
+          "metalness": 0,
+          "roughness": 0.75
+        },
+        {
+          "id": "eoatPlastic",
+          "color": [
+            0.02,
+            0.02,
+            0.022
+          ],
+          "metalness": 0,
+          "roughness": 0.5
+        },
+        {
+          "id": "eoatLens",
+          "color": [
+            0.03,
+            0.06,
+            0.03
+          ],
+          "metalness": 0,
+          "roughness": 0.25
+        }
+      ],
+      "sdk": {
+        "level": 12,
+        "of": "v2:33563:2667qinwnpe"
+      },
+      "origin": {
+        "app": "v2:33563:2667qinwnpe"
+      }
+    },
+    {
+      "format": 6,
+      "id": "oip.despawner",
+      "name": "Despawner",
+      "params": {
+        "length": {
+          "type": "number",
+          "default": 2,
+          "min": 0.2,
+          "max": 4,
+          "step": 0.1,
+          "label": "Length (m)",
+          "desc": "Local X extent of the volume that removes cargo. Cargo vanishes as soon as it is inside, so cover the full lane width or things slip past the edge."
+        },
+        "width": {
+          "type": "number",
+          "default": 2,
+          "min": 0.2,
+          "max": 4,
+          "step": 0.1,
+          "label": "Width (m)",
+          "desc": "Local Z extent of the volume that removes cargo."
+        },
+        "height": {
+          "type": "number",
+          "default": 1,
+          "min": 0.2,
+          "max": 4,
+          "step": 0.1,
+          "label": "Height (m)",
+          "desc": "Local Y extent of the volume that removes cargo."
+        },
+        "countOnly": {
+          "type": "string",
+          "product": true,
+          "default": "",
+          "label": "Count only",
+          "desc": "Count just this product, so a tote carrying a case counts once. Everything in the mouth is still removed. (none) counts every body that goes in."
+        },
+        "showReadout": {
+          "type": "boolean",
+          "default": false,
+          "label": "Show readout",
+          "desc": "Show the count, rate and cycle time on a plate above the volume. A viewing aid only: the displays and tags publish the same numbers either way."
+        },
+        "countTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "INT",
+          "default": "",
+          "label": "Throughput count tag",
+          "group": "Comms",
+          "desc": "Running total of everything this despawner has removed, published for the program to read. It only ever climbs, so take differences over time to get a rate."
+        },
+        "rateTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "REAL",
+          "default": "",
+          "label": "Throughput rate tag",
+          "unit": "/min",
+          "group": "Comms",
+          "desc": "Items removed per minute of simulated time, averaged over the whole run so far."
+        },
+        "cycleTag": {
+          "type": "tag",
+          "dir": "out",
+          "stType": "REAL",
+          "default": "",
+          "label": "Average cycle time tag",
+          "unit": "s",
+          "group": "Comms",
+          "desc": "Average time, in simulated seconds, from an item coming into being (spawned, or already in the scene when the run started) to its removal here. 0 until the first item arrives."
+        },
+        "blockTag": {
+          "type": "tag",
+          "dir": "in",
+          "stType": "BOOL",
+          "default": "",
+          "label": "Block tag (pause removal while true)",
+          "group": "Comms",
+          "desc": "While the program holds this true, nothing is removed and cargo backs up into the mouth - the way to model a downstream line that has stopped taking product."
+        }
+      },
+      "behavior": "// Despawner - a cargo sink, and the line's measuring point. Demonstrates ctx.zone / ctx.zoneAge /\n// ctx.despawn: each tick it counts the cargo in its 'mouth' zone (all of it, or one product), adds up how long that\n// cargo has existed, and removes it. From those two running sums it reports what this exit has done: the count, the rate, and\n// the average cycle time (spawn to here). A PLC block tag pauses removal, so cargo accumulates at the gate.\n//\n// The numbers are published as displays, so they need no wiring to see, and can be shown on the part itself (the\n// 'readout' plate, off by default); the tags are for a program or a project test that wants to act on them.\n\nlet total = 0\nlet ageSum = 0 // summed age of everything removed, sim seconds\n\ndefinePart({\n  params: {\n    length: { type: 'number', default: 2, min: 0.2, max: 4, step: 0.1, label: 'Length (m)', desc: 'Local X extent of the volume that removes cargo. Cargo vanishes as soon as it is inside, so cover the full lane width or things slip past the edge.' },\n    width: { type: 'number', default: 2, min: 0.2, max: 4, step: 0.1, label: 'Width (m)', desc: 'Local Z extent of the volume that removes cargo.' },\n    height: { type: 'number', default: 1, min: 0.2, max: 4, step: 0.1, label: 'Height (m)', desc: 'Local Y extent of the volume that removes cargo.' },\n    countOnly: { type: 'string', product: true, default: '', label: 'Count only', desc: 'Count just this product, so a tote carrying a case counts once. Everything in the mouth is still removed. (none) counts every body that goes in.' },\n    showReadout: { type: 'boolean', default: false, label: 'Show readout', desc: 'Show the count, rate and cycle time on a plate above the volume. A viewing aid only: the displays and tags publish the same numbers either way.' },\n    countTag: { type: 'tag', dir: 'out', stType: 'INT', default: '', label: 'Throughput count tag', group: 'Comms', desc: 'Running total of everything this despawner has removed, published for the program to read. It only ever climbs, so take differences over time to get a rate.' },\n    rateTag: { type: 'tag', dir: 'out', stType: 'REAL', default: '', label: 'Throughput rate tag', unit: '/min', group: 'Comms', desc: 'Items removed per minute of simulated time, averaged over the whole run so far.' },\n    cycleTag: { type: 'tag', dir: 'out', stType: 'REAL', default: '', label: 'Average cycle time tag', unit: 's', group: 'Comms', desc: 'Average time, in simulated seconds, from an item coming into being (spawned, or already in the scene when the run started) to its removal here. 0 until the first item arrives.' },\n    blockTag: { type: 'tag', dir: 'in', stType: 'BOOL', default: '', label: 'Block tag (pause removal while true)', group: 'Comms', desc: 'While the program holds this true, nothing is removed and cargo backs up into the mouth - the way to model a downstream line that has stopped taking product.' },\n  },\n  step(ctx) {\n    const p = ctx.params\n    const blocked = p.blockTag ? ctx.readTag(p.blockTag) : false\n    const n = ctx.zone('mouth')\n    if (n > 0 && !blocked) {\n      const only = p.countOnly ? { part: p.countOnly } : undefined\n      total += only ? ctx.zone('mouth', only) : n\n      ageSum += ctx.zoneAge('mouth', only)\n      ctx.despawn('mouth')\n    }\n    const t = ctx.simTime + ctx.dt // sim time at the END of this tick, the one this tick's removals happened in\n    const rate = (total / t) * 60\n    const cycle = total > 0 ? ageSum / total : 0\n    ctx.display('count', total)\n    ctx.display('rate', rate)\n    ctx.display('cycle', cycle)\n    ctx.display('readout', total + ' done  ' + rate.toFixed(1) + '/min  ' + (total > 0 ? cycle.toFixed(1) + ' s' : '-'))\n    if (p.countTag) ctx.writeNumber(p.countTag, total)\n    if (p.rateTag) ctx.writeNumber(p.rateTag, rate)\n    if (p.cycleTag) ctx.writeNumber(p.cycleTag, cycle)\n  },\n})\n",
+      "geometry": {
+        "kind": "rig",
+        "links": [
+          {
+            "name": "mouth",
+            "shape": {
+              "kind": "box",
+              "size": [
+                2,
+                1,
+                2
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length"
+                },
+                {
+                  "axis": 1,
+                  "param": "height"
+                },
+                {
+                  "axis": 2,
+                  "param": "width"
+                }
+              ]
+            },
+            "offset": [
+              0,
+              0.5,
+              0
+            ],
+            "offsetParams": [
+              {
+                "axis": 1,
+                "param": "height",
+                "scale": 0.5
+              }
+            ],
+            "color": [
+              0.6939,
+              0.0953,
+              0.0953
+            ],
+            "opacity": 0.25,
+            "outline": [
+              1,
+              0.2542,
+              0.2159
+            ],
+            "collision": "none",
+            "zone": {
+              "size": [
+                2,
+                1,
+                2
+              ],
+              "sizeParams": [
+                {
+                  "axis": 0,
+                  "param": "length"
+                },
+                {
+                  "axis": 1,
+                  "param": "height"
+                },
+                {
+                  "axis": 2,
+                  "param": "width"
+                }
+              ]
+            }
+          },
+          {
+            "name": "readout",
+            "showParam": "showReadout",
+            "shape": {
+              "kind": "label",
+              "textFrom": "readout",
+              "size": [
+                1.6,
+                0.36
+              ]
+            },
+            "offset": [
+              0,
+              1.01,
+              0
+            ],
+            "offsetParams": [
+              {
+                "axis": 1,
+                "param": "height",
+                "add": 0.01
+              }
+            ],
+            "rotation": [
+              -1.5707963267948966,
+              0,
+              0
+            ]
+          }
+        ],
+        "joints": [],
+        "bounds": {
+          "length": 2,
+          "width": 2,
+          "top": 1
+        }
+      },
+      "category": "Products",
+      "materials": [],
+      "sdk": {
+        "level": 12,
+        "of": "v2:4761:27zeqlirhy5"
+      },
+      "origin": {
+        "app": "v2:4761:27zeqlirhy5"
+      }
+    },
+    {
+      "format": 6,
+      "id": "oip.box",
+      "name": "Box",
+      "params": {
+        "length": {
+          "type": "number",
+          "default": 0.6,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Length (m)",
+          "handle": {
+            "kind": "face",
+            "axis": "x"
+          },
+          "desc": "Extent along local X. Drives the collision body as well as the visual, and the box is centred on its origin."
+        },
+        "width": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Width (m)",
+          "handle": {
+            "kind": "face",
+            "axis": "z"
+          },
+          "desc": "Extent along local Z. Drives the collision body as well as the visual."
+        },
+        "height": {
+          "type": "number",
+          "default": 0.4,
+          "min": 0.1,
+          "step": 0.05,
+          "label": "Height (m)",
+          "handle": {
+            "kind": "face",
+            "axis": "y"
+          },
+          "desc": "Extent along local Y. Drives the collision body as well as the visual."
+        },
+        "mass": {
+          "type": "number",
+          "default": 10,
+          "min": 0.5,
+          "max": 100,
+          "step": 0.5,
+          "label": "Mass (kg)",
+          "desc": "Physical mass. Heavier cargo is harder for a conveyor to accelerate and pushes lighter cargo out of the way."
+        },
+        "color": {
+          "type": "color",
+          "default": "#ffffff",
+          "label": "Color",
+          "desc": "Tint over the cardboard texture. White leaves it untinted."
+        }
+      },
+      "behavior": "// Box — a piece of authored cargo. Demonstrates the cargo geometry kind: the package geometry declares\n// { kind: 'cargo', cargoKind: 'box' } and the host builds the part as one dynamic physics body sized/tinted\n// from the params below (instanced batch render, gizmo grab, pilot carry). There is nothing to simulate\n// here: cargo is passive payload, so step() is empty.\n\ndefinePart({\n  params: {\n    // size drives both the render scale and the dynamic body's half-extents (centre origin). Each carries a\n    // face handle, so a placed box shows a resize dot on all six faces; the host holds the opposite face.\n    length: { type: 'number', default: 0.6, min: 0.1, step: 0.05, label: 'Length (m)', handle: { kind: 'face', axis: 'x' }, desc: 'Extent along local X. Drives the collision body as well as the visual, and the box is centred on its origin.' },\n    width: { type: 'number', default: 0.4, min: 0.1, step: 0.05, label: 'Width (m)', handle: { kind: 'face', axis: 'z' }, desc: 'Extent along local Z. Drives the collision body as well as the visual.' },\n    height: { type: 'number', default: 0.4, min: 0.1, step: 0.05, label: 'Height (m)', handle: { kind: 'face', axis: 'y' }, desc: 'Extent along local Y. Drives the collision body as well as the visual.' },\n    mass: { type: 'number', default: 10, min: 0.5, max: 100, step: 0.5, label: 'Mass (kg)', desc: 'Physical mass. Heavier cargo is harder for a conveyor to accelerate and pushes lighter cargo out of the way.' },\n    color: { type: 'color', default: '#ffffff', label: 'Color', desc: 'Tint over the cardboard texture. White leaves it untinted.' },\n  },\n  step() {\n  },\n})\n",
+      "geometry": {
+        "kind": "cargo",
+        "cargoKind": "box",
+        "size": {
+          "length": 0.6,
+          "width": 0.4,
+          "height": 0.4
+        }
+      },
+      "category": "Products",
+      "materials": [],
+      "sdk": {
+        "level": 12,
+        "of": "v2:1830:11c4ahwtzaq"
+      },
+      "origin": {
+        "app": "v2:1830:11c4ahwtzaq"
+      }
+    }
+  ]
+}

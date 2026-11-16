@@ -1,0 +1,15 @@
+﻿AI 数字工厂 1.0.0 · 安装前必读
+
+1. 本安装包已内置 Python 3.12 运行时与全部依赖，电脑无需安装 Python / Node.js / Docker。
+2. 如果 Windows 弹出“Windows 已保护你的电脑”（SmartScreen）：
+   点击“更多信息” → “仍要运行”。这是未购买代码签名证书导致的提示，不是病毒。
+3. 安装为当前用户模式，不需要管理员权限；默认安装到：
+   %LOCALAPPDATA%\Programs\AIIndustrialFactory
+4. 安装完成后双击桌面“AI 数字工厂”，约 5–15 秒浏览器自动打开。
+   本项目只在 127.0.0.1 本机运行，不上传任何数据。
+5. 停止：系统设置 → 本地运行管理 → 停止本地平台服务；
+   或开始菜单 → 停止 AI 数字工厂。
+6. 数据目录：%LOCALAPPDATA%\AIIndustrialFactory（卸载默认保留）。
+7. 若启动失败：开始菜单 → “AI 数字工厂（诊断控制台）”查看日志；
+   日志目录：%LOCALAPPDATA%\AIIndustrialFactory\logs
+8. 安装包 SHA-256 见同目录 SHA256.txt（如随包提供）。

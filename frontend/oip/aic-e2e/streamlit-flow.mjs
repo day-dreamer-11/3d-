@@ -1,0 +1,40 @@
+import { chromium } from 'playwright'
+const OUT='D:/AI数字工厂-交付/_e2e_data/shots'
+const sleep=ms=>new Promise(r=>setTimeout(r,ms))
+const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'})
+const page=await browser.newPage({viewport:{width:1600,height:1100}})
+const errors=[]; page.on('pageerror',e=>errors.push(String(e))); page.on('console',m=>{if(m.type()==='error') errors.push(m.text())})
+const log=(...a)=>console.log(...a)
+await page.goto('http://127.0.0.1:8502',{waitUntil:'domcontentloaded'})
+await page.waitForSelector('text=AIC FACTORY',{timeout:60000}); await sleep(3000)
+async function go(label){ await page.locator('label').filter({hasText:label}).first().click({force:true}); await sleep(3000) }
+await go('建模分析工作台')
+await page.getByRole('button',{name:'运行离线仿真'}).click()
+await page.waitForSelector('text=良品数',{timeout:120000})
+await sleep(2500)
+log('offline run done; kpi cards present', await page.locator('text=良品数').count())
+await page.screenshot({path:`${OUT}/streamlit-06-offline-result.png`,fullPage:true})
+// live simulation
+await page.getByRole('tab',{name:'实时仿真'}).click(); await sleep(800)
+await page.getByRole('button',{name:'启动实时仿真'}).click()
+await page.waitForSelector('text=仿真时间',{timeout:60000}); await sleep(6000)
+log('live started; pause button', await page.getByRole('button',{name:'暂停'}).count())
+await page.screenshot({path:`${OUT}/streamlit-07-live.png`,fullPage:true})
+if (await page.getByRole('button',{name:'暂停'}).count()) { await page.getByRole('button',{name:'暂停'}).click(); await sleep(2000) }
+if (await page.getByRole('button',{name:'继续'}).count()) { await page.getByRole('button',{name:'继续'}).click(); await sleep(1500) }
+if (await page.getByRole('button',{name:'停止'}).count()) { await page.getByRole('button',{name:'停止'}).click(); await sleep(3000) }
+log('live stopped')
+await page.getByRole('button',{name:'运行三种调度策略对比'}).click()
+await page.waitForSelector('text=任务',{timeout:120000}); await sleep(2500)
+log('edge done')
+await page.screenshot({path:`${OUT}/streamlit-08-edge.png`,fullPage:true})
+await page.getByRole('button',{name:'生成并评估优化建议'}).click()
+await page.waitForSelector('text=最佳候选',{timeout:180000}); await sleep(2000)
+log('optimize done')
+await page.screenshot({path:`${OUT}/streamlit-09-optimize.png`,fullPage:true})
+await page.getByRole('button',{name:'生成场景仿真报告'}).click()
+await page.waitForSelector('text=报告已生成',{timeout:120000}); await sleep(2000)
+log('report done')
+await page.screenshot({path:`${OUT}/streamlit-10-report.png`,fullPage:true})
+console.log('errors',errors.length,errors.slice(0,6))
+await browser.close()

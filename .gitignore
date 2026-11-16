@@ -1,0 +1,44 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.streamlit/secrets.toml
+*.log
+
+# 统一平台运行数据（项目、实验、服务状态、截图）
+data/
+
+# RFTwin 第三方依赖与构建产物（可重新生成）
+rftwin/frontend/node_modules/
+rftwin/frontend/dist/
+rftwin/frontend/test-results/
+rftwin/frontend/playwright-report/
+rftwin/.pytest_cache/
+
+# 部署密钥
+deploy/.env
+
+# 构建产物（运行时与安装包体积大，不入库）
+build/
+dist/
+release/
+
+# OIP 编辑器子项目（源码纳入交付；依赖与构建产物可重建）
+frontend/oip/node_modules/
+frontend/oip/dist/
+frontend/oip/.cache/
+frontend/oip/test-results/
+frontend/oip/playwright-report/
+frontend/oip/aic-e2e/shots/
+.integration_backup/
+
+# Local authoring, credentials and personal outputs
+tmp/
+output/
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
